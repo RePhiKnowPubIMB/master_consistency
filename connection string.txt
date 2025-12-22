@@ -1,0 +1,1 @@
+mongodb+srv://abdullahalsaim2004_db_user:Mok1ePWtaVk91WKK@cluster0.ilwy7n8.mongodb.net/?appName=Cluster0
