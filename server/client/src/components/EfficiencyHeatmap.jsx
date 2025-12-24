@@ -32,11 +32,11 @@ const EfficiencyHeatmap = ({ data, title, maxValue = 4, colorClass = 'text-emera
             const ratio = value.count / max;
             const segment = Math.ceil(ratio * 6);
 
-            if (segment <= 1) return 'fill-yellow-300';
+            if (segment <= 1) return 'fill-emerald-200';
             if (segment === 2) return 'fill-emerald-300';
-            if (segment === 3) return 'fill-yellow-500';
+            if (segment === 3) return 'fill-emerald-400';
             if (segment === 4) return 'fill-emerald-500';
-            if (segment === 5) return 'fill-yellow-700';
+            if (segment === 5) return 'fill-emerald-600';
             return 'fill-emerald-700';
         }
 

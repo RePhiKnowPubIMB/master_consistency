@@ -91,6 +91,7 @@ const Dashboard = () => {
     };
 
     const handleAddTomorrowTask = async (type) => {
+        if (dailyLog.isSubmitted) return;
         const task = type === 'academic' ? newTomorrowAcademicTask : newTomorrowKaggleTask;
         if (!task.trim()) return;
 
@@ -109,6 +110,7 @@ const Dashboard = () => {
     };
 
     const handleRefreshStatus = async () => {
+        if (dailyLog.isSubmitted) return;
         try {
             const res = await api.post('/dashboard/refresh-status');
             setDailyLog(res.data);
@@ -117,7 +119,35 @@ const Dashboard = () => {
         }
     };
 
+    const handlePrayerToggle = async (prayerKey) => {
+        if (dailyLog.isSubmitted) return;
+        try {
+            // Optimistic update
+            const updatedLog = { ...dailyLog };
+            updatedLog.prayers[prayerKey] = !updatedLog.prayers[prayerKey];
+            
+            // Recalculate local count for immediate UI feedback
+            const prayerList = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+            let count = 0;
+            prayerList.forEach(p => {
+                if (updatedLog.prayers[p]) count++;
+            });
+            updatedLog.prayers.count = count;
+            
+            setDailyLog(updatedLog);
+
+            // Server update
+            const res = await api.post('/dashboard/toggle-prayer', { prayer: prayerKey });
+            setDailyLog(res.data);
+        } catch (error) {
+            console.error("Error toggling prayer:", error);
+            // Revert on error (optional, but good practice)
+            fetchData(); 
+        }
+    };
+
     const handleUpdate = async (updates) => {
+        if (dailyLog.isSubmitted) return;
         try {
             const res = await api.patch('/dashboard/update', updates);
             setDailyLog(res.data);
@@ -127,6 +157,7 @@ const Dashboard = () => {
     };
 
     const handleAddReviseProblem = async () => {
+        if (dailyLog.isSubmitted) return;
         if (!newReviseProblem.trim()) return;
         try {
             await api.post('/revise', { problemLink: newReviseProblem });
@@ -141,6 +172,7 @@ const Dashboard = () => {
     };
 
     const handlePopReviseProblem = async () => {
+        if (dailyLog.isSubmitted) return;
         try {
             await api.delete('/revise/pop');
             // Refresh queue and daily log (since pop updates daily log for heatmap)
@@ -226,87 +258,111 @@ const Dashboard = () => {
 
     if (loading) return <div className="text-white text-center mt-20">Loading Midnight Brain...</div>;
 
+    // Merge dailyLog into history for real-time updates
+    const mergedHistory = history.map(h => {
+        if (dailyLog && new Date(h.date).toDateString() === new Date(dailyLog.date).toDateString()) {
+            return dailyLog;
+        }
+        return h;
+    });
+
+    // If today is not in history yet (new day), add it
+    if (dailyLog && !mergedHistory.find(h => new Date(h.date).toDateString() === new Date(dailyLog.date).toDateString())) {
+        mergedHistory.push(dailyLog);
+    }
+
+    // Helper to normalize date for heatmap
+    const toHeatmapDate = (dateStr) => {
+        if (!dateStr) return new Date().toISOString().split('T')[0];
+        // Create date object from string
+        const date = new Date(dateStr);
+        // Adjust for local timezone offset to ensure it falls on the correct local day
+        const offset = date.getTimezoneOffset();
+        const adjustedDate = new Date(date.getTime() - (offset * 60 * 1000));
+        return adjustedDate.toISOString().split('T')[0];
+    };
+
     // Prepare Heatmap Data
-    const masterHeatmapData = history.map(log => ({
-        date: log.date,
+    const masterHeatmapData = mergedHistory.map(log => ({
+        date: toHeatmapDate(log.date),
         count: log.consistencyScore
     }));
 
-    const codeforcesHeatmapData = history.map(log => ({
-        date: log.date,
+    const codeforcesHeatmapData = mergedHistory.map(log => ({
+        date: toHeatmapDate(log.date),
         count: log.codeforces.solvedCount
     }));
 
-    const leetcodeHeatmapData = history.map(log => ({
-        date: log.date,
+    const leetcodeHeatmapData = mergedHistory.map(log => ({
+        date: toHeatmapDate(log.date),
         count: log.leetcode?.status === 'SOLVED' ? 1 : 0
     }));
 
-    const revisionHeatmapData = history.map(log => {
+    const revisionHeatmapData = mergedHistory.map(log => {
         const solved = log.revision.problems.filter(p => p.status === 'SOLVED').length;
         const total = log.revision.totalDue || Math.max(solved, 1); 
         
         return {
-            date: log.date,
+            date: toHeatmapDate(log.date),
             count: solved,
             max: total
         };
     });
 
-    const prayersHeatmapData = history.map(log => ({
-        date: log.date,
+    const prayersHeatmapData = mergedHistory.map(log => ({
+        date: toHeatmapDate(log.date),
         count: log.prayers.count,
         max: 5
     }));
 
-    const workoutHeatmapData = history.map(log => {
+    const workoutHeatmapData = mergedHistory.map(log => {
         // Calculate completed exercises count
         const checklist = log.workout?.checklist || {};
         const completedCount = Object.values(checklist).filter(Boolean).length;
         const totalExercises = Object.keys(checklist).length || 1;
 
         return {
-            date: log.date,
+            date: toHeatmapDate(log.date),
             count: completedCount,
             max: totalExercises
         };
     });
 
-    const academicHeatmapData = history.map(log => {
+    const academicHeatmapData = mergedHistory.map(log => {
         const tasks = log.academic?.todoList || [];
         const totalTasks = tasks.length;
         
         if (totalTasks > 0) {
             const completedTasks = tasks.filter(t => t.isDone).length;
             return {
-                date: log.date,
+                date: toHeatmapDate(log.date),
                 count: completedTasks,
                 max: totalTasks
             };
         }
         
         return {
-            date: log.date,
+            date: toHeatmapDate(log.date),
             count: log.academic.hoursDone,
             max: log.academic.hoursTarget || 3
         };
     });
 
-    const kaggleHeatmapData = history.map(log => {
+    const kaggleHeatmapData = mergedHistory.map(log => {
         const tasks = log.kaggle?.todoList || [];
         const totalTasks = tasks.length;
         
         if (totalTasks > 0) {
             const completedTasks = tasks.filter(t => t.isDone).length;
             return {
-                date: log.date,
+                date: toHeatmapDate(log.date),
                 count: completedTasks,
                 max: totalTasks
             };
         }
 
         return {
-            date: log.date,
+            date: toHeatmapDate(log.date),
             count: log.kaggle.minutesDone,
             max: log.kaggle.targetMinutes || 60
         };
@@ -352,6 +408,8 @@ const Dashboard = () => {
                         data={masterHeatmapData} 
                         colorClass="text-green-500" 
                         onClick={handleDayClick}
+                        variant="mixed-yellow-green"
+                        maxValue={100}
                     />
                 </div>
             </section>
@@ -376,7 +434,7 @@ const Dashboard = () => {
                         <h2 className="text-2xl font-bold text-emerald-400">1. Prayer</h2>
                         <div className="text-right">
                             <div className="text-3xl font-bold">
-                                {['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].filter(p => dailyLog.prayers[p]).length}/5
+                                {dailyLog.prayers.count}/5
                             </div>
                         </div>
                     </div>
@@ -385,12 +443,13 @@ const Dashboard = () => {
                             {['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map((prayer) => {
                                 const prayerKey = prayer.toLowerCase();
                                 return (
-                                    <label key={prayer} className="flex items-center gap-3 p-3 bg-slate-800 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors">
+                                    <label key={prayer} className={`flex items-center gap-3 p-3 bg-slate-800 rounded-lg transition-colors ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-700'}`}>
                                         <input 
                                             type="checkbox"
                                             checked={dailyLog.prayers[prayerKey]}
-                                            onChange={() => handleUpdate({ [`prayers.${prayerKey}`]: !dailyLog.prayers[prayerKey] })}
-                                            className="w-5 h-5 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-slate-700"
+                                            onChange={() => handlePrayerToggle(prayerKey)}
+                                            disabled={dailyLog.isSubmitted}
+                                            className="w-5 h-5 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-slate-700 disabled:opacity-50"
                                         />
                                         <span className={dailyLog.prayers[prayerKey] ? "text-emerald-400 line-through" : "text-slate-300"}>{prayer}</span>
                                     </label>
@@ -415,23 +474,25 @@ const Dashboard = () => {
                         <div className="flex flex-col gap-4">
                             <div className="grid grid-cols-2 gap-3">
                                 {workoutExercises.map((ex) => (
-                                    <label key={ex.key} className="flex items-center gap-2 p-2 bg-slate-800 rounded cursor-pointer hover:bg-slate-700 transition-colors">
+                                    <label key={ex.key} className={`flex items-center gap-2 p-2 bg-slate-800 rounded transition-colors ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-700'}`}>
                                         <input 
                                             type="checkbox"
                                             checked={dailyLog.workout.checklist?.[ex.key] || false}
                                             onChange={() => handleWorkoutCheck(ex.key)}
-                                            className="w-4 h-4 rounded border-slate-600 text-blue-500 focus:ring-blue-500 bg-slate-700"
+                                            disabled={dailyLog.isSubmitted}
+                                            className="w-4 h-4 rounded border-slate-600 text-blue-500 focus:ring-blue-500 bg-slate-700 disabled:opacity-50"
                                         />
                                         <span className={`text-sm ${dailyLog.workout.checklist?.[ex.key] ? "text-blue-400 line-through" : "text-slate-300"}`}>{ex.label}</span>
                                     </label>
                                 ))}
                             </div>
-                            <label className="flex items-center gap-4 p-4 bg-slate-800 rounded-xl cursor-pointer hover:bg-slate-700 transition-colors w-full justify-center border border-slate-600 mt-2">
+                            <label className={`flex items-center gap-4 p-4 bg-slate-800 rounded-xl transition-colors w-full justify-center border border-slate-600 mt-2 ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-700'}`}>
                                 <input 
                                     type="checkbox"
                                     checked={dailyLog.workout.isCompleted}
                                     onChange={handleGlobalWorkoutCheck}
-                                    className="w-6 h-6 rounded border-slate-600 text-blue-500 focus:ring-blue-500 bg-slate-700"
+                                    disabled={dailyLog.isSubmitted}
+                                    className="w-6 h-6 rounded border-slate-600 text-blue-500 focus:ring-blue-500 bg-slate-700 disabled:opacity-50"
                                 />
                                 <span className="text-xl font-semibold">Workout Completed</span>
                             </label>
@@ -450,7 +511,13 @@ const Dashboard = () => {
                     <div className="mb-8">
                         <div className="flex justify-between items-center mb-2">
                             <h3 className="text-lg font-semibold text-slate-300">Codeforces</h3>
-                            <button onClick={handleRefreshStatus} className="text-sm text-green-400 hover:text-green-300">Refresh</button>
+                            <button 
+                                onClick={handleRefreshStatus} 
+                                disabled={dailyLog.isSubmitted}
+                                className={`text-sm ${dailyLog.isSubmitted ? 'text-slate-500 cursor-not-allowed' : 'text-green-400 hover:text-green-300'}`}
+                            >
+                                Refresh
+                            </button>
                         </div>
                         <div className="flex flex-col gap-6">
                             <div className="bg-slate-800 p-4 rounded-lg">
@@ -487,7 +554,8 @@ const Dashboard = () => {
                                             type="checkbox"
                                             checked={dailyLog.leetcode.status === 'SOLVED'}
                                             onChange={(e) => handleUpdate({ 'leetcode.status': e.target.checked ? 'SOLVED' : 'PENDING' })}
-                                            className="w-5 h-5 rounded border-slate-600 text-yellow-500 focus:ring-yellow-500 bg-slate-700"
+                                            disabled={dailyLog.isSubmitted}
+                                            className="w-5 h-5 rounded border-slate-600 text-yellow-500 focus:ring-yellow-500 bg-slate-700 disabled:opacity-50"
                                         />
                                         <a 
                                             href={dailyLog.leetcode.link} 
@@ -522,17 +590,25 @@ const Dashboard = () => {
                                         type="text" 
                                         value={newReviseProblem}
                                         onChange={(e) => setNewReviseProblem(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleAddReviseProblem()}
                                         placeholder="Paste Codeforces Link..."
-                                        className="flex-1 bg-slate-700 border border-slate-600 rounded p-2 text-sm text-slate-200"
+                                        disabled={dailyLog.isSubmitted}
+                                        className="flex-1 bg-slate-700 border border-slate-600 rounded p-2 text-sm text-slate-200 disabled:opacity-50"
                                     />
-                                    <button onClick={handleAddReviseProblem} className="bg-pink-600 hover:bg-pink-500 px-4 rounded text-white text-sm">Add</button>
+                                    <button 
+                                        onClick={handleAddReviseProblem} 
+                                        disabled={dailyLog.isSubmitted}
+                                        className="bg-pink-600 hover:bg-pink-500 px-4 rounded text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Add
+                                    </button>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-400 text-sm">{reviseQueue.length} problems in queue</span>
                                     <button 
                                         onClick={handlePopReviseProblem} 
-                                        disabled={reviseQueue.length === 0}
-                                        className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 px-4 py-2 rounded text-white text-sm"
+                                        disabled={reviseQueue.length === 0 || dailyLog.isSubmitted}
+                                        className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 px-4 py-2 rounded text-white text-sm disabled:cursor-not-allowed"
                                     >
                                         Pop & Revise Next
                                     </button>
@@ -629,12 +705,13 @@ const Dashboard = () => {
                         <h2 className="text-2xl font-bold text-orange-400">4. Academic</h2>
                         <div className="flex items-center gap-4">
                             <span className="text-slate-400 font-semibold">Target: 3 Hours</span>
-                            <label className="flex items-center gap-2 cursor-pointer">
+                            <label className={`flex items-center gap-2 transition-colors ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
                                 <input 
                                     type="checkbox"
                                     checked={dailyLog.academic.hoursDone >= 3}
                                     onChange={handleAcademicGlobalCheck}
-                                    className="w-6 h-6 rounded border-slate-600 text-orange-500 focus:ring-orange-500 bg-slate-700"
+                                    disabled={dailyLog.isSubmitted}
+                                    className="w-6 h-6 rounded border-slate-600 text-orange-500 focus:ring-orange-500 bg-slate-700 disabled:opacity-50"
                                 />
                                 <span className="text-slate-300">Mark Complete</span>
                             </label>
@@ -652,7 +729,8 @@ const Dashboard = () => {
                                                 type="checkbox"
                                                 checked={item.isDone}
                                                 onChange={() => toggleAcademicTask(idx)}
-                                                className="w-5 h-5 rounded border-slate-600 text-orange-500 focus:ring-orange-500 bg-slate-700"
+                                                disabled={dailyLog.isSubmitted}
+                                                className="w-5 h-5 rounded border-slate-600 text-orange-500 focus:ring-orange-500 bg-slate-700 disabled:opacity-50"
                                             />
                                             <span className={`flex-1 text-sm ${item.isDone ? 'text-slate-500 line-through' : 'text-slate-200'}`}>{item.task}</span>
                                         </div>
@@ -673,9 +751,16 @@ const Dashboard = () => {
                                     onChange={(e) => setNewTomorrowAcademicTask(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleAddTomorrowTask('academic')}
                                     placeholder="Add academic task for tomorrow..."
-                                    className="flex-1 bg-slate-800 border border-slate-600 rounded p-2 text-sm text-slate-200 placeholder-slate-500"
+                                    disabled={dailyLog.isSubmitted}
+                                    className="flex-1 bg-slate-800 border border-slate-600 rounded p-2 text-sm text-slate-200 placeholder-slate-500 disabled:opacity-50"
                                 />
-                                <button onClick={() => handleAddTomorrowTask('academic')} className="bg-orange-600 hover:bg-orange-500 px-4 rounded text-white font-bold">+</button>
+                                <button 
+                                    onClick={() => handleAddTomorrowTask('academic')} 
+                                    disabled={dailyLog.isSubmitted}
+                                    className="bg-orange-600 hover:bg-orange-500 px-4 rounded text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    +
+                                </button>
                             </div>
                             <div className="space-y-1">
                                 {tomorrowAcademicTasks.map((item, idx) => (
@@ -699,12 +784,13 @@ const Dashboard = () => {
                         <h2 className="text-2xl font-bold text-cyan-400">5. Kaggle</h2>
                         <div className="flex items-center gap-4">
                             <span className="text-slate-400 font-semibold">Target: 1 Hour</span>
-                            <label className="flex items-center gap-2 cursor-pointer">
+                            <label className={`flex items-center gap-2 transition-colors ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
                                 <input 
                                     type="checkbox"
                                     checked={dailyLog.kaggle.minutesDone >= 60}
                                     onChange={(e) => handleUpdate({ 'kaggle.minutesDone': e.target.checked ? 60 : 0 })}
-                                    className="w-6 h-6 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500 bg-slate-700"
+                                    disabled={dailyLog.isSubmitted}
+                                    className="w-6 h-6 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500 bg-slate-700 disabled:opacity-50"
                                 />
                                 <span className="text-slate-300">Mark Complete</span>
                             </label>
@@ -726,7 +812,8 @@ const Dashboard = () => {
                                                     updatedList[idx].isDone = !updatedList[idx].isDone;
                                                     handleUpdate({ 'kaggle.todoList': updatedList });
                                                 }}
-                                                className="w-5 h-5 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500 bg-slate-700"
+                                                disabled={dailyLog.isSubmitted}
+                                                className="w-5 h-5 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500 bg-slate-700 disabled:opacity-50"
                                             />
                                             <span className={`flex-1 text-sm ${item.isDone ? 'text-slate-500 line-through' : 'text-slate-200'}`}>{item.task}</span>
                                         </div>
@@ -747,9 +834,16 @@ const Dashboard = () => {
                                     onChange={(e) => setNewTomorrowKaggleTask(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleAddTomorrowTask('kaggle')}
                                     placeholder="Add Kaggle task for tomorrow..."
-                                    className="flex-1 bg-slate-800 border border-slate-600 rounded p-2 text-sm text-slate-200 placeholder-slate-500"
+                                    disabled={dailyLog.isSubmitted}
+                                    className="flex-1 bg-slate-800 border border-slate-600 rounded p-2 text-sm text-slate-200 placeholder-slate-500 disabled:opacity-50"
                                 />
-                                <button onClick={() => handleAddTomorrowTask('kaggle')} className="bg-cyan-600 hover:bg-cyan-500 px-4 rounded text-white font-bold">+</button>
+                                <button 
+                                    onClick={() => handleAddTomorrowTask('kaggle')} 
+                                    disabled={dailyLog.isSubmitted}
+                                    className="bg-cyan-600 hover:bg-cyan-500 px-4 rounded text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    +
+                                </button>
                             </div>
                             <div className="space-y-1">
                                 {tomorrowKaggleTasks.map((item, idx) => (
