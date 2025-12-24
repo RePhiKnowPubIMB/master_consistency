@@ -3,7 +3,7 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import { Tooltip } from 'react-tooltip';
 
-const EfficiencyHeatmap = ({ data, title, maxValue = 4, colorClass = 'text-emerald-500', onClick }) => {
+const EfficiencyHeatmap = ({ data, title, maxValue = 4, colorClass = 'text-emerald-500', onClick, variant }) => {
     const values = data || [];
     
     // Extract color name from text-color-500
@@ -27,6 +27,19 @@ const EfficiencyHeatmap = ({ data, title, maxValue = 4, colorClass = 'text-emera
     const getClassForValue = (value) => {
         if (!value || value.count === 0) return 'fill-slate-700';
         
+        if (variant === 'mixed-yellow-green') {
+            const max = value.max || maxValue;
+            const ratio = value.count / max;
+            const segment = Math.ceil(ratio * 6);
+
+            if (segment <= 1) return 'fill-yellow-300';
+            if (segment === 2) return 'fill-emerald-300';
+            if (segment === 3) return 'fill-yellow-500';
+            if (segment === 4) return 'fill-emerald-500';
+            if (segment === 5) return 'fill-yellow-700';
+            return 'fill-emerald-700';
+        }
+
         const percentage = (value.count / maxValue) * 100;
         
         if (percentage <= 25) return currentScale[0];

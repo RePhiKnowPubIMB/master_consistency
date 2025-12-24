@@ -244,37 +244,73 @@ const Dashboard = () => {
 
     const revisionHeatmapData = history.map(log => {
         const solved = log.revision.problems.filter(p => p.status === 'SOLVED').length;
-        const total = log.revision.totalDue || solved; // Fallback to solved if totalDue is missing (legacy data)
-        
-        // If total is 0, percentage is 0.
-        // If total > 0, calculate percentage.
-        const percentage = total > 0 ? (solved / total) * 100 : 0;
+        const total = log.revision.totalDue || Math.max(solved, 1); 
         
         return {
             date: log.date,
-            count: percentage
+            count: solved,
+            max: total
         };
     });
 
     const prayersHeatmapData = history.map(log => ({
         date: log.date,
-        count: log.prayers.count
+        count: log.prayers.count,
+        max: 5
     }));
 
-    const workoutHeatmapData = history.map(log => ({
-        date: log.date,
-        count: log.workout.isCompleted ? 1 : 0
-    }));
+    const workoutHeatmapData = history.map(log => {
+        // Calculate completed exercises count
+        const checklist = log.workout?.checklist || {};
+        const completedCount = Object.values(checklist).filter(Boolean).length;
+        const totalExercises = Object.keys(checklist).length || 1;
 
-    const academicHeatmapData = history.map(log => ({
-        date: log.date,
-        count: log.academic.hoursDone
-    }));
+        return {
+            date: log.date,
+            count: completedCount,
+            max: totalExercises
+        };
+    });
 
-    const kaggleHeatmapData = history.map(log => ({
-        date: log.date,
-        count: log.kaggle.minutesDone
-    }));
+    const academicHeatmapData = history.map(log => {
+        const tasks = log.academic?.todoList || [];
+        const totalTasks = tasks.length;
+        
+        if (totalTasks > 0) {
+            const completedTasks = tasks.filter(t => t.isDone).length;
+            return {
+                date: log.date,
+                count: completedTasks,
+                max: totalTasks
+            };
+        }
+        
+        return {
+            date: log.date,
+            count: log.academic.hoursDone,
+            max: log.academic.hoursTarget || 3
+        };
+    });
+
+    const kaggleHeatmapData = history.map(log => {
+        const tasks = log.kaggle?.todoList || [];
+        const totalTasks = tasks.length;
+        
+        if (totalTasks > 0) {
+            const completedTasks = tasks.filter(t => t.isDone).length;
+            return {
+                date: log.date,
+                count: completedTasks,
+                max: totalTasks
+            };
+        }
+
+        return {
+            date: log.date,
+            count: log.kaggle.minutesDone,
+            max: log.kaggle.targetMinutes || 60
+        };
+    });
 
     return (
         <div className="min-h-screen bg-slate-900 text-slate-100 p-6 max-w-4xl mx-auto">
@@ -362,7 +398,7 @@ const Dashboard = () => {
                             })}
                         </div>
                         <div>
-                            <EfficiencyHeatmap data={prayersHeatmapData} colorClass="text-emerald-500" />
+                            <EfficiencyHeatmap data={prayersHeatmapData} colorClass="text-emerald-500" variant="mixed-yellow-green" />
                         </div>
                     </div>
                 </section>
@@ -401,7 +437,7 @@ const Dashboard = () => {
                             </label>
                         </div>
                         <div>
-                            <EfficiencyHeatmap data={workoutHeatmapData} colorClass="text-blue-500" />
+                            <EfficiencyHeatmap data={workoutHeatmapData} colorClass="text-blue-500" variant="mixed-yellow-green" />
                         </div>
                     </div>
                 </section>
@@ -436,7 +472,7 @@ const Dashboard = () => {
                                     ))}
                                 </div>
                             </div>
-                            <EfficiencyHeatmap data={codeforcesHeatmapData} colorClass="text-green-500" maxValue={6} />
+                            <EfficiencyHeatmap data={codeforcesHeatmapData} colorClass="text-green-500" maxValue={6} variant="mixed-yellow-green" />
                         </div>
                     </div>
 
@@ -582,7 +618,7 @@ const Dashboard = () => {
                                 </div>
                             )}
 
-                            <EfficiencyHeatmap data={revisionHeatmapData} colorClass="text-pink-500" title="Revision Consistency" maxValue={100} />
+                            <EfficiencyHeatmap data={revisionHeatmapData} colorClass="text-pink-500" title="Revision Consistency" maxValue={100} variant="mixed-yellow-green" />
                         </div>
                     </div>
                 </section>
@@ -652,7 +688,7 @@ const Dashboard = () => {
                         </div>
 
                         <div>
-                            <EfficiencyHeatmap data={academicHeatmapData} colorClass="text-orange-500" />
+                            <EfficiencyHeatmap data={academicHeatmapData} colorClass="text-orange-500" variant="mixed-yellow-green" />
                         </div>
                     </div>
                 </section>
@@ -732,7 +768,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div>
-                            <EfficiencyHeatmap data={kaggleHeatmapData} colorClass="text-cyan-500" />
+                            <EfficiencyHeatmap data={kaggleHeatmapData} colorClass="text-cyan-500" variant="mixed-yellow-green" />
                         </div>
                     </div>
                 </section>

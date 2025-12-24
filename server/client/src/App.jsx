@@ -4,9 +4,10 @@ import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/master_consistency">
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="*" element={<Dashboard />} />
       </Routes>
     </Router>
   );
