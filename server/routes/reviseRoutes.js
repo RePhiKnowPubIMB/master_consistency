@@ -96,6 +96,13 @@ router.delete('/pop', async (req, res) => {
     let log = await DailyLog.findOne({ date: today });
     
     if (log) {
+        if (log.isSubmitted) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Day already submitted. Cannot revise more problems today.' 
+            });
+        }
+
         // Add to revision problems list as SOLVED
         log.revision.problems.push({
             problemId: problem._id.toString(),

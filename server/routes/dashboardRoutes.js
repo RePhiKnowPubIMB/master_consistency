@@ -235,12 +235,52 @@ router.get('/history', async (req, res) => {
     }
 });
 
+// Toggle Prayer Status
+router.post('/toggle-prayer', async (req, res) => {
+    try {
+        const { prayer } = req.body; // 'fajr', 'dhuhr', etc.
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let log = await DailyLog.findOne({ date: today });
+        if (!log) return res.status(404).json({ message: 'Log not found' });
+
+        if (log.isSubmitted) {
+            return res.status(400).json({ message: 'Day already submitted. Cannot modify.' });
+        }
+
+        // Toggle the specific prayer
+        log.prayers[prayer] = !log.prayers[prayer];
+
+        // Recalculate count immediately
+        const prayerList = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+        let count = 0;
+        prayerList.forEach(p => {
+            if (log.prayers[p]) count++;
+        });
+        log.prayers.count = count;
+
+        // Recalculate overall score
+        await calculateScore(log);
+        
+        res.json(log);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Update manual fields (prayers, academic, workout status)
 router.patch('/update', async (req, res) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
+        // Check if submitted first
+        const existingLog = await DailyLog.findOne({ date: today });
+        if (existingLog && existingLog.isSubmitted) {
+            return res.status(400).json({ message: 'Day already submitted. Cannot modify.' });
+        }
+
         const updates = req.body; // Expecting partial DailyLog object
         const log = await DailyLog.findOneAndUpdate({ date: today }, updates, { new: true });
         
@@ -264,6 +304,10 @@ router.post('/refresh-status', async (req, res) => {
         
         if (!log) return res.status(404).json({ message: 'Data not found' });
 
+        if (log.isSubmitted) {
+            return res.status(400).json({ message: 'Day already submitted. Cannot modify.' });
+        }
+
         await checkCodeforcesStatus(log);
         
         res.json(log);
@@ -278,6 +322,14 @@ router.post('/tomorrow-task', async (req, res) => {
     try {
         const { type, task } = req.body; // type: 'academic' or 'kaggle'
         
+        // Check if today is submitted
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const log = await DailyLog.findOne({ date: today });
+        if (log && log.isSubmitted) {
+            return res.status(400).json({ message: 'Day already submitted. Cannot add tasks for tomorrow.' });
+        }
+
         let userConfig = await UserConfig.findOne();
         if (!userConfig) {
             userConfig = new UserConfig();
@@ -390,39 +442,86 @@ router.get('/day-details/:date', async (req, res) => {
 });
 
 async function calculateScore(log) {
-    let totalSegments = 0;
-    let completedSegments = 0;
+    let totalScore = 0;
+    const totalSegments = 6;
 
-    // 1. Codeforces
-    totalSegments++;
-    if (log.codeforces.solvedCount >= 7) completedSegments++;
+    // Recalculate Prayer Count
+    const prayerList = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    let pCount = 0;
+    prayerList.forEach(p => {
+        if (log.prayers[p]) pCount++;
+    });
+    log.prayers.count = pCount;
+
+    // 1. Codeforces (Max 6)
+    const cfScore = Math.min(log.codeforces.solvedCount / 6, 1);
+    totalScore += cfScore;
 
     // 2. Revision
+    let revScore = 1;
     if (log.revision.problems.length > 0) {
-        totalSegments++;
         const solvedRev = log.revision.problems.filter(p => p.status === 'SOLVED').length;
-        if (solvedRev === log.revision.problems.length) completedSegments++;
+        revScore = solvedRev / log.revision.problems.length;
     }
+    totalScore += revScore;
 
-    // 3. Prayers
-    totalSegments++;
-    if (log.prayers.count >= 5) completedSegments++;
+    // 3. Prayers (Max 5)
+    const prayerScore = log.prayers.count / 5;
+    totalScore += prayerScore;
 
-    // 4. Workout (if not rest day)
-    if (!log.isRestDay) {
-        totalSegments++;
-        if (log.workout.isCompleted) completedSegments++;
+    // 4. Workout
+    let workoutScore = 0;
+    if (log.isRestDay) {
+        workoutScore = 1;
+    } else {
+        // Calculate based on checklist
+        const exercises = ['pushups', 'situps', 'squats', 'biceps', 'deadlift', 'running'];
+        let completedOps = 0;
+        let totalOps = 0;
+        
+        // Check if checklist exists and has keys
+        if (log.workout && log.workout.checklist) {
+            exercises.forEach(ex => {
+                // Only count if the exercise is in the checklist (schema defines them all default false)
+                if (log.workout.checklist[ex] !== undefined) {
+                    totalOps++;
+                    if (log.workout.checklist[ex]) completedOps++;
+                }
+            });
+        }
+
+        if (totalOps > 0) {
+            workoutScore = completedOps / totalOps;
+        } else {
+            // Fallback to boolean
+            workoutScore = log.workout.isCompleted ? 1 : 0;
+        }
     }
+    totalScore += workoutScore;
 
     // 5. Academic
-    totalSegments++;
-    if (log.academic.hoursDone >= log.academic.hoursTarget) completedSegments++;
+    let academicScore = 0;
+    if (log.academic.todoList && log.academic.todoList.length > 0) {
+        const completed = log.academic.todoList.filter(t => t.isDone).length;
+        academicScore = completed / log.academic.todoList.length;
+    } else {
+        const target = log.academic.hoursTarget || 3;
+        academicScore = Math.min(log.academic.hoursDone / target, 1);
+    }
+    totalScore += academicScore;
 
     // 6. Kaggle
-    totalSegments++;
-    if (log.kaggle.minutesDone >= log.kaggle.targetMinutes) completedSegments++;
+    let kaggleScore = 0;
+    if (log.kaggle.todoList && log.kaggle.todoList.length > 0) {
+        const completed = log.kaggle.todoList.filter(t => t.isDone).length;
+        kaggleScore = completed / log.kaggle.todoList.length;
+    } else {
+        const target = log.kaggle.targetMinutes || 60;
+        kaggleScore = Math.min(log.kaggle.minutesDone / target, 1);
+    }
+    totalScore += kaggleScore;
 
-    log.consistencyScore = totalSegments > 0 ? Math.round((completedSegments / totalSegments) * 100) : 0;
+    log.consistencyScore = Math.round((totalScore / totalSegments) * 100);
     await log.save();
 }
 

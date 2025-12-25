@@ -31,11 +31,11 @@ const fetchCodeforcesProblems = async (handle) => {
             !solvedProblems.has(`${p.contestId}${p.index}`)
         );
 
-        // 4. Select 7 random problems
+        // 4. Select 6 random problems
         const selectedProblems = [];
         const usedIndices = new Set();
         
-        while (selectedProblems.length < 7 && unsolvedProblems.length > 0) {
+        while (selectedProblems.length < 6 && unsolvedProblems.length > 0) {
             const randomIndex = Math.floor(Math.random() * unsolvedProblems.length);
             if (!usedIndices.has(randomIndex)) {
                 usedIndices.add(randomIndex);
