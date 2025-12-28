@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axiosConfig';
 import EfficiencyHeatmap from '../components/EfficiencyHeatmap';
+import ConsistencyGraph from '../components/ConsistencyGraph';
+import ContestTracker from '../components/ContestTracker';
 import DayDetailsModal from '../components/DayDetailsModal';
 import BadgeList from '../components/BadgeList';
 import { ExternalLink, Calendar, Clock, Send, CheckCircle, Award } from 'lucide-react';
@@ -403,7 +405,7 @@ const Dashboard = () => {
             {/* Master Heatmap */}
             <section className="mb-12">
                 <h2 className="text-xl font-semibold mb-4 text-slate-300">Master Consistency</h2>
-                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-8">
                     <EfficiencyHeatmap 
                         data={masterHeatmapData} 
                         colorClass="text-green-500" 
@@ -412,6 +414,14 @@ const Dashboard = () => {
                         maxValue={100}
                     />
                 </div>
+
+                <h3 className="text-lg font-semibold mb-4 text-slate-400">Consistency Trend</h3>
+                <ConsistencyGraph data={mergedHistory} />
+            </section>
+
+            {/* Contest Tracker */}
+            <section className="mb-12">
+                <ContestTracker />
             </section>
 
             {/* Badges Section */}

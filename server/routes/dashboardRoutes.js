@@ -5,6 +5,7 @@ const UserConfig = require('../models/UserConfig');
 const axios = require('axios');
 const { generateDailyLog } = require('../services/cronService');
 const { getDailyQuote } = require('../services/quoteService');
+const { getContestData } = require('../services/codeforcesService');
 
 // Helper to fetch LeetCode
 async function fetchLeetCodeLink() {
@@ -442,8 +443,7 @@ router.get('/day-details/:date', async (req, res) => {
 });
 
 async function calculateScore(log) {
-    let totalScore = 0;
-    const totalSegments = 6;
+    let weightedScore = 0;
 
     // Recalculate Prayer Count
     const prayerList = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
@@ -453,23 +453,27 @@ async function calculateScore(log) {
     });
     log.prayers.count = pCount;
 
-    // 1. Codeforces (Max 6)
+    // 1. Codeforces (Weight: 30)
     const cfScore = Math.min(log.codeforces.solvedCount / 6, 1);
-    totalScore += cfScore;
+    weightedScore += cfScore * 30;
 
-    // 2. Revision
+    // 2. LeetCode (Weight: 5)
+    const lcScore = log.leetcode && log.leetcode.status === 'SOLVED' ? 1 : 0;
+    weightedScore += lcScore * 5;
+
+    // 3. Revision (Weight: 15)
     let revScore = 1;
     if (log.revision.problems.length > 0) {
         const solvedRev = log.revision.problems.filter(p => p.status === 'SOLVED').length;
         revScore = solvedRev / log.revision.problems.length;
     }
-    totalScore += revScore;
+    weightedScore += revScore * 15;
 
-    // 3. Prayers (Max 5)
+    // 4. Prayers (Weight: 10)
     const prayerScore = log.prayers.count / 5;
-    totalScore += prayerScore;
+    weightedScore += prayerScore * 10;
 
-    // 4. Workout
+    // 5. Workout (Weight: 15)
     let workoutScore = 0;
     if (log.isRestDay) {
         workoutScore = 1;
@@ -497,9 +501,9 @@ async function calculateScore(log) {
             workoutScore = log.workout.isCompleted ? 1 : 0;
         }
     }
-    totalScore += workoutScore;
+    weightedScore += workoutScore * 15;
 
-    // 5. Academic
+    // 6. Academic (Weight: 15)
     let academicScore = 0;
     if (log.academic.todoList && log.academic.todoList.length > 0) {
         const completed = log.academic.todoList.filter(t => t.isDone).length;
@@ -508,9 +512,9 @@ async function calculateScore(log) {
         const target = log.academic.hoursTarget || 3;
         academicScore = Math.min(log.academic.hoursDone / target, 1);
     }
-    totalScore += academicScore;
+    weightedScore += academicScore * 15;
 
-    // 6. Kaggle
+    // 7. Kaggle (Weight: 10)
     let kaggleScore = 0;
     if (log.kaggle.todoList && log.kaggle.todoList.length > 0) {
         const completed = log.kaggle.todoList.filter(t => t.isDone).length;
@@ -519,10 +523,28 @@ async function calculateScore(log) {
         const target = log.kaggle.targetMinutes || 60;
         kaggleScore = Math.min(log.kaggle.minutesDone / target, 1);
     }
-    totalScore += kaggleScore;
+    weightedScore += kaggleScore * 10;
 
-    log.consistencyScore = Math.round((totalScore / totalSegments) * 100);
+    log.consistencyScore = Math.round(weightedScore);
     await log.save();
 }
+
+// Get Contest Data
+router.get('/contests', async (req, res) => {
+    try {
+        let userConfig = await UserConfig.findOne();
+        if (!userConfig) {
+            userConfig = new UserConfig();
+            await userConfig.save();
+        }
+        const handle = userConfig.username || 'RePhiKnowPubIMB';
+        
+        const data = await getContestData(handle);
+        res.json(data);
+    } catch (error) {
+        console.error('Error in /contests route:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
 
 module.exports = router;
