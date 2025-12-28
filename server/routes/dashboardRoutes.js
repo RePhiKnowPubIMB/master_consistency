@@ -525,7 +525,11 @@ async function calculateScore(log) {
     }
     weightedScore += kaggleScore * 10;
 
-    log.consistencyScore = Math.round(weightedScore);
+    if (!log.isSubmitted) {
+        log.consistencyScore = 0;
+    } else {
+        log.consistencyScore = Math.round(weightedScore);
+    }
     await log.save();
 }
 
