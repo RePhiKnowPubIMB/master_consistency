@@ -228,12 +228,12 @@ const Dashboard = () => {
     };
 
     const workoutExercises = [
-        { key: 'pushups', label: '20 Push Ups' },
-        { key: 'situps', label: '20 Situps' },
-        { key: 'squats', label: '20 Squats' },
-        { key: 'biceps', label: '20 Biceps Curl' },
-        { key: 'deadlift', label: '20 Deadlift' },
-        { key: 'running', label: '40 Min Running' }
+        { key: 'pushups', label: `${dailyLog?.workout?.targets?.pushups || 20} Push Ups` },
+        { key: 'situps', label: `${dailyLog?.workout?.targets?.situps || 20} Situps` },
+        { key: 'squats', label: `${dailyLog?.workout?.targets?.squats || 20} Squats` },
+        { key: 'biceps', label: `${dailyLog?.workout?.targets?.biceps || 20} Biceps Curl` },
+        { key: 'deadlift', label: `${dailyLog?.workout?.targets?.deadlift || 20} Deadlift` },
+        { key: 'running', label: `${dailyLog?.workout?.targets?.running || 40} Min Running` }
     ];
 
     const handleWorkoutCheck = (key) => {

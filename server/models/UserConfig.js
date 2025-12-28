@@ -25,7 +25,7 @@ const userConfigSchema = new mongoose.Schema({
   ],
   workout: {
     startDate: { type: Date, default: Date.now },
-    cycleDays: { type: Number, default: 21 },
+    cycleDays: { type: Number, default: 20 },
     baseStats: { 
       pushups: { type: Number, default: 20 }, 
       situps: { type: Number, default: 20 }, 
@@ -38,7 +38,7 @@ const userConfigSchema = new mongoose.Schema({
       pushups: { type: Number, default: 5 }, 
       situps: { type: Number, default: 5 }, 
       squats: { type: Number, default: 5 }, 
-      running: { type: Number, default: 5 }, 
+      running: { type: Number, default: 0 }, 
       deadlift: { type: Number, default: 5 }, 
       biceps: { type: Number, default: 2 } 
     },

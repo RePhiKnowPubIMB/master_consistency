@@ -33,7 +33,13 @@ const generateDailyLog = async () => {
         const workoutTargets = {};
         if (!isRestDay) {
             for (const [exercise, base] of Object.entries(userConfig.workout.baseStats)) {
-                const increment = userConfig.workout.increment[exercise] || 0;
+                let increment = userConfig.workout.increment[exercise] || 0;
+                
+                // Force running increment to 0 as per user request
+                if (exercise === 'running') {
+                    increment = 0;
+                }
+
                 const max = userConfig.workout.maxStats[exercise] || Infinity;
                 workoutTargets[exercise] = Math.min(base + (level * increment), max);
             }
