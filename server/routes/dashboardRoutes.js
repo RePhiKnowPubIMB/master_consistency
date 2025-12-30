@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const DailyLog = require('../models/DailyLog');
 const UserConfig = require('../models/UserConfig');
+const ReviseProblem = require('../models/ReviseProblem');
 const axios = require('axios');
 const { generateDailyLog } = require('../services/cronService');
 const { getDailyQuote } = require('../services/quoteService');
@@ -132,12 +133,15 @@ async function checkCodeforcesStatus(log) {
             const submissions = response.data.result;
             let updated = false;
 
+            const logDateStart = new Date(log.date).getTime();
+
             // Check Daily Problems
             log.codeforces.targetProblems.forEach(problem => {
                 if (problem.status === 'PENDING') {
                     const solved = submissions.find(s => 
                         `${s.problem.contestId}${s.problem.index}` === problem.problemId && 
-                        s.verdict === 'OK'
+                        s.verdict === 'OK' &&
+                        s.creationTimeSeconds * 1000 >= logDateStart
                     );
                     if (solved) {
                         problem.status = 'SOLVED';
@@ -152,7 +156,8 @@ async function checkCodeforcesStatus(log) {
                  if (problem.status === 'PENDING') {
                     const solved = submissions.find(s => 
                         `${s.problem.contestId}${s.problem.index}` === problem.problemId && 
-                        s.verdict === 'OK'
+                        s.verdict === 'OK' &&
+                        s.creationTimeSeconds * 1000 >= logDateStart
                     );
                     if (solved) {
                         problem.status = 'SOLVED';
@@ -214,6 +219,11 @@ router.get('/today', async (req, res) => {
 
         // Check Status on Load
         await checkCodeforcesStatus(log);
+
+        // Force recalculate score to ensure Revision Queue is up to date (e.g. new overdue problems)
+        if (!log.isSubmitted) {
+            await calculateScore(log);
+        }
 
         res.json(log);
     } catch (error) {
@@ -462,10 +472,23 @@ async function calculateScore(log) {
     weightedScore += lcScore * 5;
 
     // 3. Revision (Weight: 15)
+    // Calculate Total Due Today (Remaining in Queue due <= Today + Solved Today)
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    
+    const remainingDueCount = await ReviseProblem.countDocuments({
+        reviseDate: { $lte: today }
+    });
+    
+    const solvedRevCount = log.revision.problems.filter(p => p.status === 'SOLVED').length;
+    const totalDue = remainingDueCount + solvedRevCount;
+    
+    // Update log with accurate totalDue
+    log.revision.totalDue = totalDue;
+    
     let revScore = 1;
-    if (log.revision.problems.length > 0) {
-        const solvedRev = log.revision.problems.filter(p => p.status === 'SOLVED').length;
-        revScore = solvedRev / log.revision.problems.length;
+    if (totalDue > 0) {
+        revScore = solvedRevCount / totalDue;
     }
     weightedScore += revScore * 15;
 
