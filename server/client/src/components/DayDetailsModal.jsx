@@ -58,7 +58,7 @@ const DayDetailsModal = ({ day, onClose }) => {
                             <h3 className="text-blue-400 font-medium mb-2">Revision</h3>
                             <div className="flex justify-between text-sm">
                                 <span className="text-slate-300">Problems</span>
-                                <span className="text-white font-bold">{day.revision?.problems?.filter(p => p.status === 'SOLVED').length || 0} / {day.revision?.problems?.length || 0}</span>
+                                <span className="text-white font-bold">{day.revision?.problems?.filter(p => p.status === 'SOLVED').length || 0} / {day.revision?.totalDue || day.revision?.problems?.length || 0}</span>
                             </div>
                         </div>
 
@@ -94,6 +94,47 @@ const DayDetailsModal = ({ day, onClose }) => {
                                     </li>
                                 ))}
                             </ul>
+                        </div>
+
+                        {/* Prayers */}
+                        <div className="bg-slate-700/20 p-4 rounded-lg">
+                            <h3 className="text-teal-400 font-medium mb-2">Prayers</h3>
+                            <div className="flex justify-between text-sm mb-2">
+                                <span className="text-slate-300">Count</span>
+                                <span className="text-white font-bold">{day.prayers?.count || 0} / 5</span>
+                            </div>
+                            <div className="flex gap-1 flex-wrap">
+                                {['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(p => (
+                                    <span key={p} className={`text-[10px] px-1.5 py-0.5 rounded uppercase ${day.prayers?.[p] ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-slate-700 text-slate-500'}`}>
+                                        {p}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Workout */}
+                        <div className="bg-slate-700/20 p-4 rounded-lg">
+                            <h3 className="text-red-400 font-medium mb-2">Workout</h3>
+                            {day.isRestDay ? (
+                                <div className="text-sm text-slate-400 italic">Rest Day 🛌</div>
+                            ) : (
+                                <>
+                                    <div className="flex justify-between text-sm mb-2">
+                                        <span className="text-slate-300">Status</span>
+                                        <span className={day.workout?.isCompleted ? "text-emerald-400 font-bold" : "text-red-400 font-bold"}>
+                                            {day.workout?.isCompleted ? 'Completed' : 'Incomplete'}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-1">
+                                        {Object.entries(day.workout?.checklist || {}).map(([ex, done]) => (
+                                            <div key={ex} className="flex items-center gap-1.5">
+                                                {done ? <CheckCircle size={10} className="text-emerald-500" /> : <XCircle size={10} className="text-slate-600" />}
+                                                <span className={`text-[10px] uppercase ${done ? 'text-slate-300' : 'text-slate-500'}`}>{ex}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
