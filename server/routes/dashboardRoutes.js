@@ -103,8 +103,8 @@ async function fetchDailyCodeforcesProblems(log) {
         // Sort by contestId DESC (Latest first)
         candidates.sort((a, b) => b.contestId - a.contestId);
 
-        // Take top 6
-        const selected = candidates.slice(0, 6);
+        // Take top 4
+        const selected = candidates.slice(0, 4);
 
         // 5. Update Log
         log.codeforces.targetProblems = selected.map(p => ({
@@ -464,7 +464,7 @@ async function calculateScore(log) {
     log.prayers.count = pCount;
 
     // 1. Codeforces (Weight: 30)
-    const cfScore = Math.min(log.codeforces.solvedCount / 6, 1);
+    const cfScore = Math.min(log.codeforces.solvedCount / 4, 1);
     weightedScore += cfScore * 30;
 
     // 2. LeetCode (Weight: 5)
