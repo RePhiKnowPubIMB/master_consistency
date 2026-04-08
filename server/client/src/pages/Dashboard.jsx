@@ -370,6 +370,12 @@ const Dashboard = () => {
         };
     });
 
+    const youKnowWhoHeatmapData = mergedHistory.map(log => ({
+        date: toHeatmapDate(log.date),
+        count: log.youKnowWho?.status === 'SOLVED' ? 1 : 0,
+        max: 1
+    }));
+
     return (
         <div className="min-h-screen bg-slate-900 text-slate-100 p-6 max-w-4xl mx-auto">
             {/* Header */}
@@ -625,82 +631,84 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
-                            {/* Queue List (Table) */}
+                            {/* Queue List (Collapsible with max-height) */}
                             {reviseQueue.length > 0 && (
-                                <div className="overflow-x-auto bg-slate-800 rounded-lg border border-slate-700">
-                                    <table className="w-full text-sm text-left">
-                                        <thead className="text-xs text-slate-400 uppercase bg-slate-700/50 border-b border-slate-700">
-                                            <tr>
-                                                <th className="px-4 py-3 font-semibold">Problem Link</th>
-                                                <th className="px-4 py-3 font-semibold">Watched Date</th>
-                                                <th className="px-4 py-3 font-semibold">Revise Date</th>
-                                                <th className="px-4 py-3 font-semibold">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {reviseQueue.map((problem, index) => {
-                                                const reviseToday = isToday(problem.reviseDate);
-                                                const daysUntil = getDaysUntil(problem.reviseDate);
-                                                
-                                                return (
-                                                    <tr 
-                                                        key={problem._id} 
-                                                        className={`border-b border-slate-700 hover:bg-slate-700/50 transition-colors ${
-                                                            reviseToday ? 'bg-yellow-900/10' : ''
-                                                        }`}
-                                                    >
-                                                        <td className="px-4 py-3">
-                                                            <a
-                                                                href={problem.problemLink}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-2 hover:underline"
-                                                            >
-                                                                <ExternalLink size={14} />
-                                                                {problem.problemLink.length > 40 
-                                                                    ? problem.problemLink.substring(0, 40) + '...' 
-                                                                    : problem.problemLink}
-                                                            </a>
-                                                            {index === 0 && (
-                                                                <span className="inline-block mt-1 text-[10px] bg-indigo-900/50 text-indigo-300 px-2 py-0.5 rounded-full font-semibold border border-indigo-700/50">
-                                                                    NEXT UP
-                                                                </span>
-                                                            )}
-                                                        </td>
-                                                        <td className="px-4 py-3 text-slate-400">
-                                                            <div className="flex items-center gap-2">
-                                                                <Calendar size={14} />
-                                                                {formatDate(problem.dateWatchedEditorial)}
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-4 py-3">
-                                                            <div className="flex items-center gap-2">
-                                                                <Clock size={14} className={reviseToday ? 'text-yellow-500' : 'text-slate-400'} />
-                                                                <span className={reviseToday ? 'font-bold text-yellow-500' : 'text-slate-400'}>
-                                                                    {formatDate(problem.reviseDate)}
-                                                                </span>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-4 py-3">
-                                                            {reviseToday ? (
-                                                                <span className="inline-flex items-center gap-1 bg-yellow-900/30 text-yellow-400 px-2 py-1 rounded-full text-xs font-semibold border border-yellow-700/50">
-                                                                    ⏰ Revise Today!
-                                                                </span>
-                                                            ) : daysUntil < 0 ? (
-                                                                <span className="inline-flex items-center gap-1 bg-red-900/30 text-red-400 px-2 py-1 rounded-full text-xs font-semibold border border-red-700/50">
-                                                                    🔴 Overdue ({Math.abs(daysUntil)}d ago)
-                                                                </span>
-                                                            ) : (
-                                                                <span className="inline-flex items-center gap-1 bg-blue-900/30 text-blue-400 px-2 py-1 rounded-full text-xs font-semibold border border-blue-700/50">
-                                                                    📅 In {daysUntil} day{daysUntil !== 1 ? 's' : ''}
-                                                                </span>
-                                                            )}
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
+                                <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+                                    <div className="max-h-60 overflow-y-auto">
+                                        <table className="w-full text-sm text-left">
+                                            <thead className="text-xs text-slate-400 uppercase bg-slate-700/50 border-b border-slate-700 sticky top-0">
+                                                <tr>
+                                                    <th className="px-4 py-3 font-semibold">Problem Link</th>
+                                                    <th className="px-4 py-3 font-semibold">Watched Date</th>
+                                                    <th className="px-4 py-3 font-semibold">Revise Date</th>
+                                                    <th className="px-4 py-3 font-semibold">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {reviseQueue.map((problem, index) => {
+                                                    const reviseToday = isToday(problem.reviseDate);
+                                                    const daysUntil = getDaysUntil(problem.reviseDate);
+                                                    
+                                                    return (
+                                                        <tr 
+                                                            key={problem._id} 
+                                                            className={`border-b border-slate-700 hover:bg-slate-700/50 transition-colors ${
+                                                                reviseToday ? 'bg-yellow-900/10' : ''
+                                                            }`}
+                                                        >
+                                                            <td className="px-4 py-3">
+                                                                <a
+                                                                    href={problem.problemLink}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-2 hover:underline"
+                                                                >
+                                                                    <ExternalLink size={14} />
+                                                                    {problem.problemLink.length > 40 
+                                                                        ? problem.problemLink.substring(0, 40) + '...' 
+                                                                        : problem.problemLink}
+                                                                </a>
+                                                                {index === 0 && (
+                                                                    <span className="inline-block mt-1 text-[10px] bg-indigo-900/50 text-indigo-300 px-2 py-0.5 rounded-full font-semibold border border-indigo-700/50">
+                                                                        NEXT UP
+                                                                    </span>
+                                                                )}
+                                                            </td>
+                                                            <td className="px-4 py-3 text-slate-400">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Calendar size={14} />
+                                                                    {formatDate(problem.dateWatchedEditorial)}
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 py-3">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Clock size={14} className={reviseToday ? 'text-yellow-500' : 'text-slate-400'} />
+                                                                    <span className={reviseToday ? 'font-bold text-yellow-500' : 'text-slate-400'}>
+                                                                        {formatDate(problem.reviseDate)}
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 py-3">
+                                                                {reviseToday ? (
+                                                                    <span className="inline-flex items-center gap-1 bg-yellow-900/30 text-yellow-400 px-2 py-1 rounded-full text-xs font-semibold border border-yellow-700/50">
+                                                                        ⏰ Revise Today!
+                                                                    </span>
+                                                                ) : daysUntil < 0 ? (
+                                                                    <span className="inline-flex items-center gap-1 bg-red-900/30 text-red-400 px-2 py-1 rounded-full text-xs font-semibold border border-red-700/50">
+                                                                        🔴 Overdue ({Math.abs(daysUntil)}d ago)
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="inline-flex items-center gap-1 bg-blue-900/30 text-blue-400 px-2 py-1 rounded-full text-xs font-semibold border border-blue-700/50">
+                                                                        📅 In {daysUntil} day{daysUntil !== 1 ? 's' : ''}
+                                                                    </span>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             )}
 
@@ -798,7 +806,14 @@ const Dashboard = () => {
                                 <input 
                                     type="checkbox"
                                     checked={dailyLog.kaggle.minutesDone >= 60}
-                                    onChange={(e) => handleUpdate({ 'kaggle.minutesDone': e.target.checked ? 60 : 0 })}
+                                    onChange={(e) => {
+                                        const newStatus = e.target.checked;
+                                        const updatedList = dailyLog.kaggle.todoList.map(t => ({ ...t, isDone: newStatus }));
+                                        handleUpdate({
+                                            'kaggle.minutesDone': newStatus ? 60 : 0,
+                                            'kaggle.todoList': updatedList
+                                        });
+                                    }}
                                     disabled={dailyLog.isSubmitted}
                                     className="w-6 h-6 rounded border-slate-600 text-cyan-500 focus:ring-cyan-500 bg-slate-700 disabled:opacity-50"
                                 />
@@ -873,6 +888,91 @@ const Dashboard = () => {
                         </div>
                         <div>
                             <EfficiencyHeatmap data={kaggleHeatmapData} colorClass="text-cyan-500" variant="mixed-yellow-green" />
+                        </div>
+                    </div>
+                </section>
+
+                {/* 7. YouKnowWho Academy */}
+                <section className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                    <div className="flex justify-between items-start mb-4">
+                        <h2 className="text-2xl font-bold text-purple-400">7. YouKnowWho Academy</h2>
+                        <div className="text-right">
+                            <div className="text-sm text-slate-400">Daily Topic</div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-6">
+                        {/* Today's Problem */}
+                        {dailyLog.youKnowWho && dailyLog.youKnowWho.link ? (
+                            <div className="bg-slate-800 p-5 rounded-lg border border-slate-700">
+                                <div className="mb-4">
+                                    <div className="flex items-start justify-between gap-4 mb-3">
+                                        <div className="flex-1">
+                                            <a 
+                                                href={dailyLog.youKnowWho.link} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-purple-400 hover:text-purple-300 font-bold text-lg flex items-center gap-2 hover:underline break-words"
+                                            >
+                                                <ExternalLink size={18} />
+                                                {dailyLog.youKnowWho.name}
+                                            </a>
+                                        </div>
+                                        <label className={`flex items-center gap-2 whitespace-nowrap ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                                            <input 
+                                                type="checkbox"
+                                                checked={dailyLog.youKnowWho.status === 'SOLVED'}
+                                                onChange={(e) => handleUpdate({ 'youKnowWho.status': e.target.checked ? 'SOLVED' : 'PENDING' })}
+                                                disabled={dailyLog.isSubmitted}
+                                                className="w-5 h-5 rounded border-slate-600 text-purple-500 focus:ring-purple-500 bg-slate-700 disabled:opacity-50"
+                                            />
+                                            <span className={`text-sm font-semibold ${dailyLog.youKnowWho.status === 'SOLVED' ? 'text-purple-400' : 'text-slate-300'}`}>
+                                                {dailyLog.youKnowWho.status === 'SOLVED' ? 'Solved' : 'Pending'}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    
+                                    {/* Problem Details */}
+                                    <div className="flex flex-wrap gap-3 mt-4">
+                                        {dailyLog.youKnowWho.difficulty && (
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
+                                                dailyLog.youKnowWho.difficulty === 'Easy' ? 'bg-green-900/30 text-green-400 border-green-700/50' :
+                                                dailyLog.youKnowWho.difficulty === 'Medium' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700/50' :
+                                                'bg-red-900/30 text-red-400 border-red-700/50'
+                                            }`}>
+                                                {dailyLog.youKnowWho.difficulty}
+                                            </span>
+                                        )}
+                                        {dailyLog.youKnowWho.importance && (
+                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-900/30 text-purple-400 border border-purple-700/50">
+                                                ⭐ {dailyLog.youKnowWho.importance}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Topic/Tags */}
+                                    {dailyLog.youKnowWho.topic && (
+                                        <div className="mt-4 pt-4 border-t border-slate-700">
+                                            <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">Topics</div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {dailyLog.youKnowWho.topic.split(',').map((tag, idx) => (
+                                                    <span key={idx} className="inline-block bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs">
+                                                        {tag.trim()}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-slate-800 p-6 rounded-lg border border-slate-700 text-center text-slate-400">
+                                <p className="text-sm italic">Loading daily YouKnowWho problem...</p>
+                            </div>
+                        )}
+
+                        {/* Heatmap */}
+                        <div>
+                            <EfficiencyHeatmap data={youKnowWhoHeatmapData} colorClass="text-purple-500" variant="mixed-yellow-green" />
                         </div>
                     </div>
                 </section>

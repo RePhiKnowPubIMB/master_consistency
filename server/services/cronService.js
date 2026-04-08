@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const DailyLog = require('../models/DailyLog');
 const UserConfig = require('../models/UserConfig');
 const { fetchCodeforcesProblems } = require('./codeforcesService');
+const { fetchDailyYouKnowWhoProblem } = require('./youKnowWhoService');
 
 const generateDailyLog = async () => {
     console.log('Running Midnight Brain...');
@@ -47,6 +48,9 @@ const generateDailyLog = async () => {
 
         // 3. Codeforces Fetcher
         const cfProblems = await fetchCodeforcesProblems(userConfig.username);
+
+        // 3.5. YouKnowWho Fetcher
+        const youKnowWhoProblem = await fetchDailyYouKnowWhoProblem();
 
         // 4. Revision Logic (7 days ago)
         const sevenDaysAgo = new Date(today);
@@ -100,7 +104,15 @@ const generateDailyLog = async () => {
                 required: !isRestDay,
                 level,
                 targets: workoutTargets
-            }
+            },
+            youKnowWho: youKnowWhoProblem ? {
+                link: youKnowWhoProblem.link,
+                name: youKnowWhoProblem.name,
+                difficulty: youKnowWhoProblem.difficulty,
+                importance: youKnowWhoProblem.importance,
+                topic: youKnowWhoProblem.topic || 'General',
+                status: 'PENDING'
+            } : null
         });
 
         await newLog.save();

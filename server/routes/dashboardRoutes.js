@@ -548,6 +548,13 @@ async function calculateScore(log) {
     }
     weightedScore += kaggleScore * 10;
 
+    // 8. YouKnowWho (Weight: 10)
+    let youKnowWhoScore = 0;
+    if (log.youKnowWho) {
+        youKnowWhoScore = log.youKnowWho.status === 'SOLVED' ? 1 : 0;
+    }
+    weightedScore += youKnowWhoScore * 10;
+
     if (!log.isSubmitted) {
         log.consistencyScore = 0;
     } else {

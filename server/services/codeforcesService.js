@@ -74,9 +74,54 @@ const getContestData = async (handle) => {
         const userRatingRes = await axios.get(userRatingUrl);
         
         const participatedContestIds = new Set();
+        let userCurrentRating = 1400; // Default if no rating yet
+        
         if (userRatingRes.data.status === 'OK') {
             userRatingRes.data.result.forEach(r => participatedContestIds.add(r.contestId));
+            // Get the latest rating from rating history
+            if (userRatingRes.data.result.length > 0) {
+                userCurrentRating = userRatingRes.data.result[userRatingRes.data.result.length - 1].newRating;
+            }
         }
+
+        // 3. Fetch user info to get current rank
+        const userInfoUrl = `https://codeforces.com/api/user.info?handles=${handle}`;
+        const userInfoRes = await axios.get(userInfoUrl);
+        let userRank = 'newbie'; // Default rank
+        
+        if (userInfoRes.data.status === 'OK' && userInfoRes.data.result.length > 0) {
+            userRank = userInfoRes.data.result[0].rank.toLowerCase();
+            userCurrentRating = userInfoRes.data.result[0].rating || userCurrentRating;
+        }
+
+        // Function to check if a contest is rated for the user
+        const isContestRatedForUser = (contestName, userCurrentRating) => {
+            const n = contestName.toLowerCase();
+            
+            // Div 4 is unrated for Specialist or above (rating >= 1400)
+            if (n.includes('div. 4')) {
+                return userCurrentRating < 1400;
+            }
+            
+            // Div 3 is unrated for Expert or above (rating >= 1600)
+            if (n.includes('div. 3')) {
+                return userCurrentRating < 1600;
+            }
+            
+            // Div 2 is unrated for Master or above (rating >= 2100)
+            if (n.includes('div. 2')) {
+                return userCurrentRating < 2100;
+            }
+            
+            // Educational rounds are typically rated for all
+            if (n.includes('educational')) return true;
+            
+            // Global rounds are typically rated for all
+            if (n.includes('global round')) return true;
+            
+            // Other contests (Hello, VK Cup, etc.) are usually rated
+            return true;
+        };
 
         const allContests = contestListRes.data.result;
 
@@ -116,14 +161,21 @@ const getContestData = async (handle) => {
             .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds); // Oldest first
 
         // Map history to participation status
-        const heatmapData = history.map(c => ({
-            id: c.id,
-            name: c.name,
-            startTimeSeconds: c.startTimeSeconds,
-            participated: participatedContestIds.has(c.id)
-        }));
+        // For unrated contests, mark as participated (auto-filled)
+        const heatmapData = history.map(c => {
+            const isRated = isContestRatedForUser(c.name, userCurrentRating);
+            const participated = participatedContestIds.has(c.id);
+            
+            return {
+                id: c.id,
+                name: c.name,
+                startTimeSeconds: c.startTimeSeconds,
+                participated: isRated ? participated : true, // Auto-mark unrated contests as participated
+                isRated: isRated
+            };
+        });
 
-        // Calculate Streaks
+        // Calculate Streaks (only considering rated contests)
         let currentStreak = 0;
         let maxStreak = 0;
         let maxStreakLastYear = 0;
@@ -132,9 +184,12 @@ const getContestData = async (handle) => {
         const oneYearAgo = Date.now() / 1000 - 365 * 24 * 60 * 60;
         const oneMonthAgo = Date.now() / 1000 - 30 * 24 * 60 * 60;
 
+        // Filter only rated contests for streak calculation
+        const ratedContests = heatmapData.filter(c => c.isRated);
+
         // Calculate Max Streak (All Time)
         let tempStreak = 0;
-        heatmapData.forEach(c => {
+        ratedContests.forEach(c => {
             if (c.participated) {
                 tempStreak++;
             } else {
@@ -145,7 +200,7 @@ const getContestData = async (handle) => {
         maxStreak = Math.max(maxStreak, tempStreak);
 
         // Calculate Current Streak (working backwards from most recent)
-        const reversedHistory = [...heatmapData].reverse();
+        const reversedHistory = [...ratedContests].reverse();
         for (let c of reversedHistory) {
             if (c.participated) {
                 currentStreak++;
@@ -156,7 +211,7 @@ const getContestData = async (handle) => {
 
         // Calculate Max Streak Last Year
         tempStreak = 0;
-        heatmapData.filter(c => c.startTimeSeconds >= oneYearAgo).forEach(c => {
+        ratedContests.filter(c => c.startTimeSeconds >= oneYearAgo).forEach(c => {
             if (c.participated) {
                 tempStreak++;
             } else {
@@ -168,7 +223,7 @@ const getContestData = async (handle) => {
 
         // Calculate Max Streak Last Month
         tempStreak = 0;
-        heatmapData.filter(c => c.startTimeSeconds >= oneMonthAgo).forEach(c => {
+        ratedContests.filter(c => c.startTimeSeconds >= oneMonthAgo).forEach(c => {
             if (c.participated) {
                 tempStreak++;
             } else {
@@ -178,9 +233,9 @@ const getContestData = async (handle) => {
         });
         maxStreakLastMonth = Math.max(maxStreakLastMonth, tempStreak);
 
-        // Calculate Totals Since 2024
-        const totalContestsSince2024 = heatmapData.length;
-        const participatedSince2024 = heatmapData.filter(c => c.participated).length;
+        // Calculate Totals Since 2024 (only rated)
+        const totalContestsSince2024 = ratedContests.length;
+        const participatedSince2024 = ratedContests.filter(c => c.participated).length;
 
         return {
             upcoming,

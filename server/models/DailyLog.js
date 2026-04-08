@@ -81,6 +81,15 @@ const dailyLogSchema = new mongoose.Schema({
         running: { type: Boolean, default: false }
     },
     isCompleted: { type: Boolean, default: false }
+  },
+
+  youKnowWho: {
+    link: String,
+    name: String,
+    difficulty: String,
+    importance: Number,
+    topic: String,
+    status: { type: String, enum: ['PENDING', 'SOLVED'], default: 'PENDING' }
   }
 });
 
