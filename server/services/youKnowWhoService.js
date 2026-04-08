@@ -3,11 +3,18 @@ const puppeteer = require('puppeteer');
 const fetchDailyYouKnowWhoProblem = async () => {
     let browser;
     try {
-        // Launch browser
-        browser = await puppeteer.launch({
+        // Launch browser - use system Chrome if available
+        const launchOptions = {
             headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
+        };
+        
+        // Use system Chrome if PUPPETEER_EXECUTABLE_PATH is set, otherwise let puppeteer use bundled
+        if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+            launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+        }
+        
+        browser = await puppeteer.launch(launchOptions);
 
         const page = await browser.newPage();
         await page.goto('https://youkn0wwho.academy/topic-list', {

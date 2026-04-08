@@ -893,89 +893,92 @@ const Dashboard = () => {
                 </section>
 
                 {/* 7. YouKnowWho Academy */}
-                <section className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
-                    <div className="flex justify-between items-start mb-4">
-                        <h2 className="text-2xl font-bold text-purple-400">7. YouKnowWho Academy</h2>
-                        <div className="text-right">
-                            <div className="text-sm text-slate-400">Daily Topic</div>
+                {dailyLog.youKnowWho && (
+                    <section className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                        <div className="flex justify-between items-start mb-4">
+                            <h2 className="text-2xl font-bold text-purple-400">7. YouKnowWho Academy</h2>
+                            <div className="text-right">
+                                <div className="text-sm text-slate-400">Daily Topic</div>
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex flex-col gap-6">
-                        {/* Today's Problem */}
-                        {dailyLog.youKnowWho && dailyLog.youKnowWho.link ? (
-                            <div className="bg-slate-800 p-5 rounded-lg border border-slate-700">
-                                <div className="mb-4">
-                                    <div className="flex items-start justify-between gap-4 mb-3">
-                                        <div className="flex-1">
-                                            <a 
-                                                href={dailyLog.youKnowWho.link} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                className="text-purple-400 hover:text-purple-300 font-bold text-lg flex items-center gap-2 hover:underline break-words"
-                                            >
-                                                <ExternalLink size={18} />
-                                                {dailyLog.youKnowWho.name}
-                                            </a>
-                                        </div>
-                                        <label className={`flex items-center gap-2 whitespace-nowrap ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                                            <input 
-                                                type="checkbox"
-                                                checked={dailyLog.youKnowWho.status === 'SOLVED'}
-                                                onChange={(e) => handleUpdate({ 'youKnowWho.status': e.target.checked ? 'SOLVED' : 'PENDING' })}
-                                                disabled={dailyLog.isSubmitted}
-                                                className="w-5 h-5 rounded border-slate-600 text-purple-500 focus:ring-purple-500 bg-slate-700 disabled:opacity-50"
-                                            />
-                                            <span className={`text-sm font-semibold ${dailyLog.youKnowWho.status === 'SOLVED' ? 'text-purple-400' : 'text-slate-300'}`}>
-                                                {dailyLog.youKnowWho.status === 'SOLVED' ? 'Solved' : 'Pending'}
-                                            </span>
-                                        </label>
-                                    </div>
-                                    
-                                    {/* Problem Details */}
-                                    <div className="flex flex-wrap gap-3 mt-4">
-                                        {dailyLog.youKnowWho.difficulty && (
-                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
-                                                dailyLog.youKnowWho.difficulty === 'Easy' ? 'bg-green-900/30 text-green-400 border-green-700/50' :
-                                                dailyLog.youKnowWho.difficulty === 'Medium' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700/50' :
-                                                'bg-red-900/30 text-red-400 border-red-700/50'
-                                            }`}>
-                                                {dailyLog.youKnowWho.difficulty}
-                                            </span>
-                                        )}
-                                        {dailyLog.youKnowWho.importance && (
-                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-900/30 text-purple-400 border border-purple-700/50">
-                                                ⭐ {dailyLog.youKnowWho.importance}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Topic/Tags */}
-                                    {dailyLog.youKnowWho.topic && (
-                                        <div className="mt-4 pt-4 border-t border-slate-700">
-                                            <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">Topics</div>
-                                            <div className="flex flex-wrap gap-2">
-                                                {dailyLog.youKnowWho.topic.split(',').map((tag, idx) => (
-                                                    <span key={idx} className="inline-block bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs">
-                                                        {tag.trim()}
-                                                    </span>
-                                                ))}
+                        <div className="flex flex-col gap-6">
+                            {/* Today's Problem */}
+                            {dailyLog.youKnowWho.link ? (
+                                <div className="bg-slate-800 p-5 rounded-lg border border-slate-700">
+                                    <div className="mb-4">
+                                        <div className="flex items-start justify-between gap-4 mb-3">
+                                            <div className="flex-1">
+                                                <a 
+                                                    href={dailyLog.youKnowWho.link} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="text-purple-400 hover:text-purple-300 font-bold text-lg flex items-center gap-2 hover:underline break-words"
+                                                >
+                                                    <ExternalLink size={18} />
+                                                    {dailyLog.youKnowWho.name || 'YouKnowWho Problem'}
+                                                </a>
                                             </div>
+                                            <label className={`flex items-center gap-2 whitespace-nowrap ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={dailyLog.youKnowWho.status === 'SOLVED'}
+                                                    onChange={(e) => handleUpdate({ 'youKnowWho.status': e.target.checked ? 'SOLVED' : 'PENDING' })}
+                                                    disabled={dailyLog.isSubmitted}
+                                                    className="w-5 h-5 rounded border-slate-600 text-purple-500 focus:ring-purple-500 bg-slate-700 disabled:opacity-50"
+                                                />
+                                                <span className={`text-sm font-semibold ${dailyLog.youKnowWho.status === 'SOLVED' ? 'text-purple-400' : 'text-slate-300'}`}>
+                                                    {dailyLog.youKnowWho.status === 'SOLVED' ? 'Solved' : 'Pending'}
+                                                </span>
+                                            </label>
                                         </div>
-                                    )}
+                                        
+                                        {/* Problem Details */}
+                                        <div className="flex flex-wrap gap-3 mt-4">
+                                            {dailyLog.youKnowWho.difficulty && (
+                                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
+                                                    dailyLog.youKnowWho.difficulty === 'Easy' || dailyLog.youKnowWho.difficulty === 'EASY' ? 'bg-green-900/30 text-green-400 border-green-700/50' :
+                                                    dailyLog.youKnowWho.difficulty === 'Medium' || dailyLog.youKnowWho.difficulty === 'MEDIUM' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700/50' :
+                                                    'bg-red-900/30 text-red-400 border-red-700/50'
+                                                }`}>
+                                                    {dailyLog.youKnowWho.difficulty}
+                                                </span>
+                                            )}
+                                            {dailyLog.youKnowWho.importance && (
+                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-900/30 text-purple-400 border border-purple-700/50">
+                                                    ⭐ {dailyLog.youKnowWho.importance}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Topic/Tags */}
+                                        {dailyLog.youKnowWho.topic && (
+                                            <div className="mt-4 pt-4 border-t border-slate-700">
+                                                <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">Topics</div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {dailyLog.youKnowWho.topic.split(',').map((tag, idx) => (
+                                                        <span key={idx} className="inline-block bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs">
+                                                            {tag.trim()}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="bg-slate-800 p-6 rounded-lg border border-slate-700 text-center text-slate-400">
-                                <p className="text-sm italic">Loading daily YouKnowWho problem...</p>
-                            </div>
-                        )}
+                            ) : (
+                                <div className="bg-slate-800 p-6 rounded-lg border border-slate-700 text-center text-slate-400">
+                                    <p className="text-sm italic">Fetching daily YouKnowWho problem...</p>
+                                    <p className="text-xs mt-2 text-slate-500">(Requires Chrome/Chromium for scraping)</p>
+                                </div>
+                            )}
 
                         {/* Heatmap */}
                         <div>
                             <EfficiencyHeatmap data={youKnowWhoHeatmapData} colorClass="text-purple-500" variant="mixed-yellow-green" />
                         </div>
                     </div>
-                </section>
+                    </section>
+                )}
 
                 {/* Day Reflection & Submission */}
                 <section className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 mt-8">

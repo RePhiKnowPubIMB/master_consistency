@@ -8,6 +8,9 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const reviseRoutes = require('./routes/reviseRoutes');
 const UserConfig = require('./models/UserConfig');
 
+// Set Puppeteer to use system Chrome
+process.env.PUPPETEER_EXECUTABLE_PATH = '/usr/bin/google-chrome';
+
 dotenv.config();
 
 const app = express();
