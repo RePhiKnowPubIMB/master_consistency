@@ -13,12 +13,6 @@ process.env.PUPPETEER_EXECUTABLE_PATH = '/usr/bin/google-chrome';
 
 dotenv.config();
 
-// FALLBACK: If MONGO_URI is not set, use the production URI directly
-if (!process.env.MONGO_URI) {
-    process.env.MONGO_URI = 'mongodb+srv://abdullahalsaim2004_db_user:Mok1ePWtaVk91WKK@cluster0.ilwy7n8.mongodb.net/consistency-architect?appName=Cluster0';
-    console.log('⚠️  MONGO_URI not found in environment. Using fallback production URI.');
-}
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -26,7 +20,13 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Database Connection
+// Database Connection - MUST be set via environment variables
+if (!process.env.MONGO_URI) {
+    console.error('❌ CRITICAL: MONGO_URI environment variable is not set!');
+    console.error('Please set MONGO_URI in your Render dashboard or local .env file');
+    process.exit(1);
+}
+
 mongoose.connect(process.env.MONGO_URI)
     .then(async () => {
         console.log('✅ MongoDB Connected');
