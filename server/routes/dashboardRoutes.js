@@ -327,24 +327,13 @@ router.get('/quote', async (req, res) => {
 // Get today's dashboard data
 router.get('/today', async (req, res) => {
     try {
-        console.log("Dashboard /today requested");
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        let log = await DailyLog.findOne({ date: today });
-        
-        // TEMPORARY: Reset log if it exists but is empty
-        if (log && (!log.youKnowWho.targetProblems || log.youKnowWho.targetProblems.length === 0)) {
-            console.log("Log exists but YKW is empty. Deleting to regenerate...");
-            await DailyLog.deleteOne({ _id: log._id });
-            log = null;
-        }
-
-        if (!log) {
-            // If no log exists (e.g., first run or missed cron), generate it now
-            await generateDailyLog();
-            log = await DailyLog.findOne({ date: today });
-        }
+        // DELETED AND REGENERATED: FORCING A RESTART OF TODAY'S LOG
+        await DailyLog.deleteMany({ date: today });
+        await generateDailyLog();
+        const log = await DailyLog.findOne({ date: today });
 
         // Check for LeetCode Daily (After 6 AM) - don't block response
         const now = new Date();

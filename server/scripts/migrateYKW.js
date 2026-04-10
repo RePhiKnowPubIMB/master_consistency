@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const YKWProblem = require('../models/YKWProblem');
 
-const DB_URI = 'mongodb://localhost:27017/consistency-architect'; // Verify your actual DB name or get from ENV
+const DB_URI = "mongodb+srv://abdullahalsaim2004_db_user:Mok1ePWtaVk91WKK@cluster0.ilwy7n8.mongodb.net/consistency-architect?appName=Cluster0";
 const JSON_FILE = path.join(__dirname, '../data/all-topic-problems.json');
 
 async function migrate() {
