@@ -13,6 +13,12 @@ process.env.PUPPETEER_EXECUTABLE_PATH = '/usr/bin/google-chrome';
 
 dotenv.config();
 
+// FALLBACK: If MONGO_URI is not set, use the production URI directly
+if (!process.env.MONGO_URI) {
+    process.env.MONGO_URI = 'mongodb+srv://abdullahalsaim2004_db_user:Mok1ePWtaVk91WKK@cluster0.ilwy7n8.mongodb.net/consistency-architect?appName=Cluster0';
+    console.log('⚠️  MONGO_URI not found in environment. Using fallback production URI.');
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -21,9 +27,9 @@ app.use(cors());
 app.use(express.json());
 
 // Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/consistency-architect')
+mongoose.connect(process.env.MONGO_URI)
     .then(async () => {
-        console.log('MongoDB Connected');
+        console.log('✅ MongoDB Connected');
         await seedQuotes();
 
         // Migration: Update cycleDays to 20
