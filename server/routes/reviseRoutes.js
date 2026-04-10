@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
     // Calculate dates
     const dateWatchedEditorial = new Date();
     const reviseDate = new Date(dateWatchedEditorial);
-    reviseDate.setDate(reviseDate.getDate() + 7);
+    reviseDate.setDate(reviseDate.getDate() + 20);
 
     const problem = await ReviseProblem.create({
       problemLink,

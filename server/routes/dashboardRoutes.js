@@ -75,13 +75,13 @@ const fetchDailyYKWProblems = async (log) => {
         if (unsolved.length > 0) {
             log.youKnowWho.targetProblems = unsolved.map(p => ({
                 problemId: p._id.toString(),
-                name: p.title,
+                name: p.title.replace(/^\d+\.\s*/, '').trim(),
                 link: p.url,
                 topic: p.topicName,
                 difficulty: p.difficulty,
                 status: 'PENDING'
             }));
-            return log.youKnowWho.targetProblems;
+            log.youKnowWho.isComplete = false;
         } else {
             return [];
         }
@@ -188,19 +188,17 @@ async function fetchDailyCodeforcesProblems(log) {
     try {
         console.log('🔄 [CF] Starting Codeforces daily problem fetch...');
         
-        const handle = 'RePhiKnowPubIMB'; // Hardcoded as per requirement
         let userConfig = await UserConfig.findOne({});
         
         if (!userConfig) {
             userConfig = new UserConfig({
-                username: handle,
+                username: 'RePhiKnowPubIMB', // default fallback
                 codeforces: { currentRating: 1800, solvedCount: 0 }
             });
             await userConfig.save();
         }
-
-        let targetRating = userConfig.codeforces?.currentRating || 1800;
-        console.log(`📊 [CF] Target rating: ${targetRating}`);
+        
+        const handle = userConfig.username || 'RePhiKnowPubIMB';
 
         // Step 1: Fetch all user submissions
         console.log(`📥 [CF] Fetching submissions for ${handle}...`);
@@ -216,40 +214,41 @@ async function fetchDailyCodeforcesProblems(log) {
         const submissions = subRes.data.result || [];
         console.log(`✅ [CF] Got ${submissions.length} total submissions`);
 
-        // Step 2: Count solved problems at each rating
+        // Step 2: Compute solved problems set and count by rating
         const solvedByRating = {};
-        submissions.forEach(s => {
-            if (s.verdict === 'OK' && s.problem.rating) {
-                const rating = s.problem.rating;
-                const problemId = `${s.problem.contestId}${s.problem.index}`;
-                
-                if (!solvedByRating[rating]) {
-                    solvedByRating[rating] = new Set();
-                }
-                solvedByRating[rating].add(problemId);
-            }
-        });
-
-        const solvedAtTargetRating = solvedByRating[targetRating]?.size || 0;
-        console.log(`📈 [CF] Solved at rating ${targetRating}: ${solvedAtTargetRating}`);
-
-        // Step 3: Auto-increment rating if 200+ solved at current rating
-        if (solvedAtTargetRating >= 200) {
-            targetRating += 100;
-            console.log(`⬆️  [CF] Rating incremented to ${targetRating} (200+ problems solved)`);
-            userConfig.codeforces.currentRating = targetRating;
-            await userConfig.save();
-        }
-
-        // Step 4: Get all solved problem IDs
         const allSolvedIds = new Set();
         submissions.forEach(s => {
             if (s.verdict === 'OK') {
-                allSolvedIds.add(`${s.problem.contestId}${s.problem.index}`);
+                const problemId = `${s.problem.contestId}${s.problem.index}`;
+                allSolvedIds.add(problemId);
+                
+                if (s.problem.rating) {
+                    const rating = s.problem.rating;
+                    if (!solvedByRating[rating]) {
+                        solvedByRating[rating] = new Set();
+                    }
+                    solvedByRating[rating].add(problemId);
+                }
             }
         });
 
-        // Step 5: Fetch all problems from Codeforces
+        // Step 3: Find target rating (>= 1800, needs < 200 solved)
+        let targetRating = userConfig.codeforces?.currentRating || 1800; // Codeforces ratings normally start at 1800
+        while (targetRating <= 3500) {
+            const solvedCount = solvedByRating[targetRating]?.size || 0;
+            if (solvedCount < 200) {
+                break; // Found the rating that needs more solves!
+            }
+            targetRating += 100;
+        }
+
+        console.log(`📊 [CF] Target rating selected: ${targetRating} (Solved: ${solvedByRating[targetRating]?.size || 0})`);
+
+        // Update user config to reflect current rating target
+        userConfig.codeforces.currentRating = targetRating;
+        await userConfig.save();
+
+        // Step 4: Fetch all problems from Codeforces
         console.log(`📥 [CF] Fetching problem set...`);
         const probRes = await axios.get('https://codeforces.com/api/problemset.problems', {
             timeout: 15000
@@ -263,7 +262,7 @@ async function fetchDailyCodeforcesProblems(log) {
         const allProblems = probRes.data.result.problems || [];
         console.log(`✅ [CF] Got ${allProblems.length} total problems`);
 
-        // Step 6: Filter unsolved problems at target rating
+        // Step 5: Filter unsolved problems at target rating
         const candidates = allProblems.filter(p => 
             p.rating === targetRating && 
             !allSolvedIds.has(`${p.contestId}${p.index}`)
@@ -271,10 +270,10 @@ async function fetchDailyCodeforcesProblems(log) {
 
         console.log(`🎯 [CF] Found ${candidates.length} unsolved problems at rating ${targetRating}`);
 
-        // Step 7: Sort by latest contests first
+        // Step 6: Sort by latest contests first (descending contestId)
         candidates.sort((a, b) => b.contestId - a.contestId);
 
-        // Step 8: Take top 4
+        // Step 7: Take top 4
         const selected = candidates.slice(0, 4);
         console.log(`✅ [CF] Selected ${selected.length} problems`);
 
@@ -284,7 +283,7 @@ async function fetchDailyCodeforcesProblems(log) {
             return;
         }
 
-        // Step 9: Update log with selected problems
+        // Step 8: Update log with selected problems
         log.codeforces.targetProblems = selected.map(p => ({
             problemId: `${p.contestId}${p.index}`,
             name: p.name,
@@ -375,32 +374,33 @@ router.get('/today', async (req, res) => {
 
         let log = await DailyLog.findOne({ date: today });
 
-        // Force regeneration if log is missing or data is empty
-        if (!log || !log.youKnowWho?.targetProblems?.length) {
-            console.log(`[${new Date().toISOString()}] Regenerating daily log...`);
-            await DailyLog.deleteMany({ date: today });
+        // If no log exists for today, create it
+        if (!log) {
+            console.log(`[${new Date().toISOString()}] ✨ First load of the day - Creating daily log...`);
             await generateDailyLog();
             log = await DailyLog.findOne({ date: today });
+        } else {
+            console.log(`[${new Date().toISOString()}] 📖 Loading cached daily log for today`);
         }
 
-        // SYNCHRONOUSLY POPULATE YKW if empty
+        // SYNCHRONOUSLY POPULATE YKW if empty (only on first load)
         if (!log.youKnowWho.targetProblems || log.youKnowWho.targetProblems.length === 0) {
-            console.log(`[${new Date().toISOString()}] Fetching YKW problems synchronously...`);
+            console.log(`[${new Date().toISOString()}] 🔄 YKW problems missing - Fetching...`);
             await fetchDailyYKWProblems(log);
             await log.save();
         }
 
-        // SYNCHRONOUSLY POPULATE CODEFORCES if empty
+        // SYNCHRONOUSLY POPULATE CODEFORCES if empty (only on first load)
         if (!log.codeforces.targetProblems || log.codeforces.targetProblems.length === 0) {
-            console.log(`[${new Date().toISOString()}] Fetching Codeforces problems synchronously...`);
+            console.log(`[${new Date().toISOString()}] 🔄 Codeforces problems missing - Fetching from API...`);
             await fetchDailyCodeforcesProblems(log);
             await log.save();
         }
 
-        // Return the fully populated log to the frontend
+        // Return the fully populated log to the frontend (from cache, no new API calls)
         res.json(log);
 
-        // BACKGROUND CHECKS (Don't block the initial response - NO MORE RESPONSES AFTER THIS)
+        // BACKGROUND CHECKS (Don't block the initial response)
         const now = new Date();
         if (now.getHours() >= 6 && !log.leetcode.link) {
             fetchLeetCodeLink().then(link => {
@@ -544,6 +544,8 @@ router.post('/retry-youknowwho', async (req, res) => {
 
         // Fetch fresh problems
         await fetchDailyYKWProblems(log);
+        
+        await log.save();
 
         res.json(log);
     } catch (error) {
@@ -551,7 +553,37 @@ router.post('/retry-youknowwho', async (req, res) => {
     }
 });
 
-// Add Tomorrow's Task
+// Retry Codeforces
+router.post('/retry-codeforces', async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let log = await DailyLog.findOne({ date: today });
+
+        if (!log) return res.status(404).json({ message: 'Data not found' });
+
+        if (log.isSubmitted) {
+            return res.status(400).json({ message: 'Day already submitted.' });
+        }
+
+        // Fix user config rating if messed up
+        let userConfig = await UserConfig.findOne({});
+        if (userConfig && userConfig.codeforces.currentRating < 1800) {
+            userConfig.codeforces.currentRating = 1800;
+            await userConfig.save();
+        }
+
+        // Clear existing to force new fetch
+        log.codeforces.targetProblems = [];
+        await fetchDailyCodeforcesProblems(log);
+        
+        res.json(log);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Update tomorrow's tasks
 router.post('/tomorrow-task', async (req, res) => {
     try {
         const { type, task } = req.body; // type: 'academic' or 'kaggle'
@@ -611,6 +643,14 @@ router.post('/submit-day', async (req, res) => {
 
         log.comment = comment;
         log.isSubmitted = true;
+
+        if (log.youKnowWho && log.youKnowWho.targetProblems) {
+            for (let p of log.youKnowWho.targetProblems) {
+                if (p.status === 'SOLVED') {
+                    await YKWProblem.findByIdAndUpdate(p.problemId, { solved: true });
+                }
+            }
+        }
 
         // Recalculate score one last time to be sure
         await calculateScore(log); // This saves the log

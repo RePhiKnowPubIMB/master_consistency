@@ -55,6 +55,24 @@ const Dashboard = () => {
         });
     };
 
+    const toggleCodeforcesProblm = async (problemId) => {
+        if (dailyLog.isSubmitted) return;
+        
+        const updatedProblems = dailyLog.codeforces.targetProblems.map(p => {
+            if (p.problemId === problemId) {
+                return { ...p, status: p.status === 'SOLVED' ? 'PENDING' : 'SOLVED' };
+            }
+            return p;
+        });
+
+        const isAnySolved = updatedProblems.some(p => p.status === 'SOLVED');
+        
+        await handleUpdate({
+            'codeforces.targetProblems': updatedProblems,
+            'codeforces.isComplete': isAnySolved
+        });
+    };
+
     const fetchData = async () => {
         try {
             const [todayRes, historyRes, reviseRes, tomorrowRes, quoteRes, badgesRes] = await Promise.all([
@@ -586,7 +604,7 @@ const Dashboard = () => {
 
                     {/* Codeforces */}
                     <div className="mb-8">
-                        <div className="flex justify-between items-center mb-2">
+                        <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-semibold text-slate-300">Codeforces</h3>
                             <button
                                 onClick={handleRefreshStatus}
@@ -596,6 +614,72 @@ const Dashboard = () => {
                                 Refresh
                             </button>
                         </div>
+                        
+                        {/* Today's Target Problems */}
+                        <div className="mb-6 p-6 bg-green-900/20 rounded-2xl border-2 border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.1)] relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                            <div className="flex justify-between items-center mb-6 relative z-10">
+                                <h4 className="text-lg font-black text-green-400">Today's Target Problems</h4>
+                                <span className="text-[10px] font-black bg-green-500 text-slate-900 px-3 py-1 rounded-full uppercase tracking-widest">
+                                    Rating: 1800
+                                </span>
+                            </div>
+                            <div className="bg-slate-900/60 backdrop-blur-md rounded-xl border border-green-500/20 overflow-hidden shadow-2xl">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="text-[10px] text-green-400 uppercase bg-green-500/10 border-b border-green-500/20">
+                                            <tr>
+                                                <th className="px-6 py-4 font-black tracking-widest">Problem Name</th>
+                                                <th className="px-6 py-4 font-black tracking-widest text-right">Rating</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-800/50">
+                                            {dailyLog?.codeforces?.targetProblems?.map((problem, index) => (
+                                                <tr key={problem.problemId || index} className="hover:bg-green-500/5 transition-all duration-300 group">
+                                                    <td className="px-6 py-5">
+                                                        <div className="flex flex-col gap-2">
+                                                            <a
+                                                                href={problem.link}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className={`group/link font-bold flex items-center gap-2 transition-all ${problem.status === 'SOLVED' 
+                                                                    ? 'text-green-500' 
+                                                                    : 'text-slate-100 hover:text-green-400'
+                                                                }`}
+                                                            >
+                                                                {problem.status === 'SOLVED' ? (
+                                                                    <CheckCircle size={18} className="mt-0.5 shrink-0 text-green-500" />
+                                                                ) : (
+                                                                    <ExternalLink size={16} className="mt-0.5 shrink-0 transition-transform group-hover/link:scale-110 text-green-500" />
+                                                                )}
+                                                                <span>{problem.name}</span>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-5 text-right">
+                                                        <span className="inline-block bg-slate-800 text-green-400 px-3 py-1 rounded font-bold text-xs border border-green-500/20">
+                                                            {problem.rating || 'N/A'}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {(!dailyLog?.codeforces?.targetProblems || dailyLog.codeforces.targetProblems.length === 0) && (
+                                                <tr>
+                                                    <td colSpan="2" className="px-4 py-20 text-center bg-slate-900/40">
+                                                        <div className="flex flex-col items-center gap-4">
+                                                            <RefreshCw size={48} className="animate-spin text-green-500/20" />
+                                                            <p className="text-green-500/50 font-black uppercase tracking-[0.2em] text-xs">Loading Problems...</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Statistics */}
                         <div className="flex flex-col gap-6">
                             <div className="bg-slate-800 p-4 rounded-lg">
                                 <div className="text-sm text-slate-400 mb-2">Problems Solved Today</div>

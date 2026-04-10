@@ -10,6 +10,7 @@ const dailyLogSchema = new mongoose.Schema({
         problemId: String, 
         name: String, 
         link: String, 
+        rating: Number,
         status: { type: String, enum: ['PENDING', 'SOLVED'], default: 'PENDING' }
       } 
     ],
