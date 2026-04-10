@@ -1,0 +1,8 @@
+{
+    "name": "consistency-architect-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "build": "cd server/client && npm install && npm run build"
+    }
+}

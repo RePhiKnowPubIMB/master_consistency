@@ -9,6 +9,22 @@ const { generateDailyLog } = require('../services/cronService');
 const { getDailyQuote } = require('../services/quoteService');
 const { getContestData } = require('../services/codeforcesService');
 
+// Secure Cron Trigger (for Vercel/External Cron)
+router.get('/cron', async (req, res) => {
+    try {
+        // Secure it with a secret key
+        const authHeader = req.headers.authorization;
+        if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        await generateDailyLog();
+        res.json({ message: 'Daily log generation triggered successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Helper to fetch YKW Problems
 const fetchDailyYKWProblems = async (log) => {
     try {
@@ -26,9 +42,9 @@ const fetchDailyYKWProblems = async (log) => {
         const currentCount = userConfig.ykw?.topicProblemCount || 0;
 
         // Get unsolved problems for the current topic
-        let unsolved = await YKWProblem.find({ 
+        let unsolved = await YKWProblem.find({
             topicName: currentTopic,
-            solved: false 
+            solved: false
         }).sort({ dailyIndex: 1 }).limit(4);
 
         // If no problems found for current topic, try next topic automatically
@@ -39,17 +55,17 @@ const fetchDailyYKWProblems = async (log) => {
             for (let i = 1; i <= allTopics.length; i++) {
                 const checkIndex = (currentIndex + i) % allTopics.length;
                 const nextTopicCandidate = allTopics[checkIndex];
-                
+
                 const count = await YKWProblem.countDocuments({ topicName: nextTopicCandidate, solved: false });
                 if (count > 0) {
                     userConfig.ykw.currentTopic = nextTopicCandidate;
                     userConfig.ykw.topicProblemCount = 0;
                     await userConfig.save();
                     currentTopic = nextTopicCandidate;
-                    
-                    unsolved = await YKWProblem.find({ 
+
+                    unsolved = await YKWProblem.find({
                         topicName: currentTopic,
-                        solved: false 
+                        solved: false
                     }).sort({ dailyIndex: 1 }).limit(4);
                     break;
                 }
@@ -87,7 +103,7 @@ async function checkYKWStatus(log) {
         // Codeforces logic uses the API. For YKW (CSES, SPOJ, CF, Kattis), we'd need a multi-platform scraper.
         // To satisfy "same like the cf", we'll check if any of these links appear in CF submissions 
         // if they are CF links.
-        
+
         const cfRes = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}&from=1&count=50`, {
             timeout: 5000
         }).catch(() => null);
@@ -102,10 +118,10 @@ async function checkYKWStatus(log) {
                     const parts = problem.link.split('/');
                     const pIndex = parts[parts.length - 1];
                     const cId = parts[parts.length - 3];
-                    
-                    const solved = cfRes.data.result.find(s => 
-                        s.problem.contestId == cId && 
-                        s.problem.index == pIndex && 
+
+                    const solved = cfRes.data.result.find(s =>
+                        s.problem.contestId == cId &&
+                        s.problem.index == pIndex &&
                         s.verdict === 'OK' &&
                         s.creationTimeSeconds * 1000 >= logDateStart
                     );
@@ -113,13 +129,13 @@ async function checkYKWStatus(log) {
                     if (solved) {
                         problem.status = 'SOLVED';
                         updated = true;
-                        
+
                         // Mark in master YKW collection
-                        await YKWProblem.findByIdAndUpdate(problem.problemId, { 
-                            solved: true, 
-                            solveDate: new Date() 
+                        await YKWProblem.findByIdAndUpdate(problem.problemId, {
+                            solved: true,
+                            solveDate: new Date()
                         });
-                        
+
                         // Increment topic count for user
                         userConfig.ykw.topicProblemCount++;
                         await userConfig.save();
@@ -188,7 +204,7 @@ async function fetchDailyCodeforcesProblems(log) {
 
             const submissions = subRes.data.result;
             const solvedSet = new Set();
-            
+
             submissions.forEach(s => {
                 if (s.verdict === 'OK') {
                     solvedSet.add(`${s.problem.contestId}${s.problem.index}`);
@@ -229,9 +245,9 @@ async function fetchDailyCodeforcesProblems(log) {
             // 4. Filter & Sort
             // Criteria: Rating == currentRating, ContestId >= 900 (Approx 2018), Not Solved
             const candidates = allProblems.filter(p => {
-                return p.rating === currentRating && 
-                       p.contestId >= 900 && 
-                       !solvedSet.has(`${p.contestId}${p.index}`);
+                return p.rating === currentRating &&
+                    p.contestId >= 900 &&
+                    !solvedSet.has(`${p.contestId}${p.index}`);
             });
 
             // Sort by contestId DESC (Latest first)
@@ -266,7 +282,7 @@ async function checkCodeforcesStatus(log) {
         const response = await axios.get(`https://codeforces.com/api/user.status?handle=${userConfig.username}&from=1&count=50`, {
             timeout: 5000
         });
-        
+
         if (response.data.status === 'OK') {
             const submissions = response.data.result;
             let updated = false;
@@ -276,8 +292,8 @@ async function checkCodeforcesStatus(log) {
             // Check Daily Problems
             log.codeforces.targetProblems.forEach(problem => {
                 if (problem.status === 'PENDING') {
-                    const solved = submissions.find(s => 
-                        `${s.problem.contestId}${s.problem.index}` === problem.problemId && 
+                    const solved = submissions.find(s =>
+                        `${s.problem.contestId}${s.problem.index}` === problem.problemId &&
                         s.verdict === 'OK' &&
                         s.creationTimeSeconds * 1000 >= logDateStart
                     );
@@ -291,9 +307,9 @@ async function checkCodeforcesStatus(log) {
 
             // Check Revision Problems
             log.revision.problems.forEach(problem => {
-                 if (problem.status === 'PENDING') {
-                    const solved = submissions.find(s => 
-                        `${s.problem.contestId}${s.problem.index}` === problem.problemId && 
+                if (problem.status === 'PENDING') {
+                    const solved = submissions.find(s =>
+                        `${s.problem.contestId}${s.problem.index}` === problem.problemId &&
                         s.verdict === 'OK' &&
                         s.creationTimeSeconds * 1000 >= logDateStart
                     );
@@ -329,7 +345,7 @@ router.get('/today', async (req, res) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         let log = await DailyLog.findOne({ date: today });
 
         // Force regeneration if log is missing or data is empty
@@ -370,21 +386,21 @@ router.get('/today', async (req, res) => {
 
         // Check for Codeforces Daily (If empty) - don't block response
         if (!log.codeforces.targetProblems || log.codeforces.targetProblems.length === 0) {
-            fetchDailyCodeforcesProblems(log).catch(err => 
+            fetchDailyCodeforcesProblems(log).catch(err =>
                 console.error('Background CF fetch error:', err.message)
             );
         }
 
         // Check for Codeforces Daily (If empty) - don't block response
         if (!log.codeforces.targetProblems || log.codeforces.targetProblems.length === 0) {
-            fetchDailyCodeforcesProblems(log).catch(err => 
+            fetchDailyCodeforcesProblems(log).catch(err =>
                 console.error('Background CF fetch error:', err.message)
             );
         }
 
         // Check for YouKnowWho Daily (If empty) - don't block response
         if (!log.youKnowWho.targetProblems || log.youKnowWho.targetProblems.length === 0) {
-            fetchDailyYKWProblems(log).catch(err => 
+            fetchDailyYKWProblems(log).catch(err =>
                 console.error('Background YKW fetch error:', err)
             );
         }
@@ -453,7 +469,7 @@ router.post('/toggle-prayer', async (req, res) => {
 
         // Recalculate overall score
         await calculateScore(log);
-        
+
         res.json(log);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -465,7 +481,7 @@ router.patch('/update', async (req, res) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         // Check if submitted first
         const existingLog = await DailyLog.findOne({ date: today });
         if (existingLog && existingLog.isSubmitted) {
@@ -474,7 +490,7 @@ router.patch('/update', async (req, res) => {
 
         const updates = req.body; // Expecting partial DailyLog object
         const log = await DailyLog.findOneAndUpdate({ date: today }, updates, { new: true });
-        
+
         // Recalculate score after update
         if (log) {
             await calculateScore(log);
@@ -492,7 +508,7 @@ router.post('/refresh-status', async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const log = await DailyLog.findOne({ date: today });
-        
+
         if (!log) return res.status(404).json({ message: 'Data not found' });
 
         if (log.isSubmitted) {
@@ -501,7 +517,7 @@ router.post('/refresh-status', async (req, res) => {
 
         await checkCodeforcesStatus(log);
         await checkYKWStatus(log);
-        
+
         res.json(log);
 
     } catch (error) {
@@ -515,7 +531,7 @@ router.post('/retry-youknowwho', async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         let log = await DailyLog.findOne({ date: today });
-        
+
         if (!log) return res.status(404).json({ message: 'Data not found' });
 
         if (log.isSubmitted) {
@@ -524,7 +540,7 @@ router.post('/retry-youknowwho', async (req, res) => {
 
         // Fetch fresh problems
         await fetchDailyYKWProblems(log);
-        
+
         res.json(log);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -535,7 +551,7 @@ router.post('/retry-youknowwho', async (req, res) => {
 router.post('/tomorrow-task', async (req, res) => {
     try {
         const { type, task } = req.body; // type: 'academic' or 'kaggle'
-        
+
         // Check if today is submitted
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -591,7 +607,7 @@ router.post('/submit-day', async (req, res) => {
 
         log.comment = comment;
         log.isSubmitted = true;
-        
+
         // Recalculate score one last time to be sure
         await calculateScore(log); // This saves the log
 
@@ -631,22 +647,22 @@ router.get('/day-details/:date', async (req, res) => {
         // Let's try to find by range or exact match if stored as UTC midnight.
         // Since we store `date: today` where `today.setHours(0,0,0,0)`, it depends on server timezone.
         // Assuming the date passed is correct.
-        
+
         const log = await DailyLog.findOne({ date: date });
-        
+
         if (!log) {
-             // Fallback: try to find by range if exact match fails due to timezone
-             const nextDay = new Date(date);
-             nextDay.setDate(date.getDate() + 1);
-             const logRange = await DailyLog.findOne({
-                 date: {
-                     $gte: date,
-                     $lt: nextDay
-                 }
-             });
-             if(logRange) return res.json(logRange);
-             
-             return res.status(404).json({ message: 'Log not found' });
+            // Fallback: try to find by range if exact match fails due to timezone
+            const nextDay = new Date(date);
+            nextDay.setDate(date.getDate() + 1);
+            const logRange = await DailyLog.findOne({
+                date: {
+                    $gte: date,
+                    $lt: nextDay
+                }
+            });
+            if (logRange) return res.json(logRange);
+
+            return res.status(404).json({ message: 'Log not found' });
         }
 
         res.json(log);
@@ -678,17 +694,17 @@ async function calculateScore(log) {
     // Calculate Total Due Today (Remaining in Queue due <= Today + Solved Today)
     const today = new Date();
     today.setHours(23, 59, 59, 999);
-    
+
     const remainingDueCount = await ReviseProblem.countDocuments({
         reviseDate: { $lte: today }
     });
-    
+
     const solvedRevCount = log.revision.problems.filter(p => p.status === 'SOLVED').length;
     const totalDue = remainingDueCount + solvedRevCount;
-    
+
     // Update log with accurate totalDue
     log.revision.totalDue = totalDue;
-    
+
     let revScore = 1;
     if (totalDue > 0) {
         revScore = solvedRevCount / totalDue;
@@ -708,7 +724,7 @@ async function calculateScore(log) {
         const exercises = ['pushups', 'situps', 'squats', 'biceps', 'deadlift', 'running'];
         let completedOps = 0;
         let totalOps = 0;
-        
+
         // Check if checklist exists and has keys
         if (log.workout && log.workout.checklist) {
             exercises.forEach(ex => {
@@ -783,7 +799,7 @@ router.get('/contests', async (req, res) => {
             await userConfig.save();
         }
         const handle = userConfig.username || 'RePhiKnowPubIMB';
-        
+
         const data = await getContestData(handle);
         res.json(data);
     } catch (error) {
