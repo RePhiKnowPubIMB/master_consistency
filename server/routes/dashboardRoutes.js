@@ -358,8 +358,6 @@ router.get('/today', async (req, res) => {
 
         // BACKGROUND CHECKS (Don't block the initial response)
         const now = new Date();
-        // ... (remaining background logic)
-        const now = new Date();
         if (now.getHours() >= 6 && !log.leetcode.link) {
             fetchLeetCodeLink().then(link => {
                 if (link) {
