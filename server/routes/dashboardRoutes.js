@@ -330,10 +330,15 @@ router.get('/today', async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        // DELETED AND REGENERATED: FORCING A RESTART OF TODAY'S LOG
-        await DailyLog.deleteMany({ date: today });
-        await generateDailyLog();
-        const log = await DailyLog.findOne({ date: today });
+        let log = await DailyLog.findOne({ date: today });
+
+        // CLEAN FIX: If log is empty or lacks YKW, force-generate
+        if (!log || !log.youKnowWho?.targetProblems || log.youKnowWho.targetProblems.length === 0) {
+            console.log("REGENERATING LOG: Missing data for", today);
+            await DailyLog.deleteMany({ date: today }); // Clear any corrupted/empty log
+            await generateDailyLog();
+            log = await DailyLog.findOne({ date: today });
+        }
 
         // Check for LeetCode Daily (After 6 AM) - don't block response
         const now = new Date();
