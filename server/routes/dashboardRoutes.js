@@ -183,95 +183,122 @@ async function fetchLeetCodeLink() {
     }
 }
 
-// Helper to fetch Codeforces Problems
+// COMPLETELY REDESIGNED: Fetch 4 Codeforces Problems Daily
 async function fetchDailyCodeforcesProblems(log) {
     try {
-        let userConfig = await UserConfig.findOne();
+        console.log('🔄 [CF] Starting Codeforces daily problem fetch...');
+        
+        const handle = 'RePhiKnowPubIMB'; // Hardcoded as per requirement
+        let userConfig = await UserConfig.findOne({});
+        
         if (!userConfig) {
-            userConfig = new UserConfig();
+            userConfig = new UserConfig({
+                username: handle,
+                codeforces: { currentRating: 1800, solvedCount: 0 }
+            });
             await userConfig.save();
         }
 
-        const handle = userConfig.username || 'RePhiKnowPubIMB';
-        let currentRating = userConfig.codeforces?.currentRating || 1700;
+        let targetRating = userConfig.codeforces?.currentRating || 1800;
+        console.log(`📊 [CF] Target rating: ${targetRating}`);
 
-        try {
-            // 1. Fetch User Submissions (with timeout)
-            const subRes = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}`, {
-                timeout: 8000
-            });
-            if (subRes.data.status !== 'OK') return;
+        // Step 1: Fetch all user submissions
+        console.log(`📥 [CF] Fetching submissions for ${handle}...`);
+        const subRes = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}`, {
+            timeout: 10000
+        });
 
-            const submissions = subRes.data.result;
-            const solvedSet = new Set();
+        if (subRes.data.status !== 'OK') {
+            console.error(`❌ [CF] API Error: ${subRes.data.comment}`);
+            return;
+        }
 
-            submissions.forEach(s => {
-                if (s.verdict === 'OK') {
-                    solvedSet.add(`${s.problem.contestId}${s.problem.index}`);
+        const submissions = subRes.data.result || [];
+        console.log(`✅ [CF] Got ${submissions.length} total submissions`);
+
+        // Step 2: Count solved problems at each rating
+        const solvedByRating = {};
+        submissions.forEach(s => {
+            if (s.verdict === 'OK' && s.problem.rating) {
+                const rating = s.problem.rating;
+                const problemId = `${s.problem.contestId}${s.problem.index}`;
+                
+                if (!solvedByRating[rating]) {
+                    solvedByRating[rating] = new Set();
                 }
-            });
-
-            // 2. Determine Rating (Check if we need to level up)
-            let solvedCount = 0;
-            const countSolvedForRating = (rating) => {
-                const distinctSolved = new Set();
-                submissions.forEach(s => {
-                    if (s.verdict === 'OK' && s.problem.rating === rating) {
-                        distinctSolved.add(`${s.problem.contestId}${s.problem.index}`);
-                    }
-                });
-                return distinctSolved.size;
-            };
-
-            solvedCount = countSolvedForRating(currentRating);
-
-            while (solvedCount >= 200) {
-                currentRating += 100;
-                solvedCount = countSolvedForRating(currentRating);
+                solvedByRating[rating].add(problemId);
             }
+        });
 
-            // Update Config
-            userConfig.codeforces = { currentRating, solvedCount };
+        const solvedAtTargetRating = solvedByRating[targetRating]?.size || 0;
+        console.log(`📈 [CF] Solved at rating ${targetRating}: ${solvedAtTargetRating}`);
+
+        // Step 3: Auto-increment rating if 200+ solved at current rating
+        if (solvedAtTargetRating >= 200) {
+            targetRating += 100;
+            console.log(`⬆️  [CF] Rating incremented to ${targetRating} (200+ problems solved)`);
+            userConfig.codeforces.currentRating = targetRating;
             await userConfig.save();
-
-            // 3. Fetch Problemset (with timeout)
-            const probRes = await axios.get('https://codeforces.com/api/problemset.problems', {
-                timeout: 8000
-            });
-            if (probRes.data.status !== 'OK') return;
-
-            const allProblems = probRes.data.result.problems;
-
-            // 4. Filter & Sort
-            // Criteria: Rating == currentRating, ContestId >= 900 (Approx 2018), Not Solved
-            const candidates = allProblems.filter(p => {
-                return p.rating === currentRating &&
-                    p.contestId >= 900 &&
-                    !solvedSet.has(`${p.contestId}${p.index}`);
-            });
-
-            // Sort by contestId DESC (Latest first)
-            candidates.sort((a, b) => b.contestId - a.contestId);
-
-            // Take top 4
-            const selected = candidates.slice(0, 4);
-            console.log(`✅ Selected ${selected.length} CF problems for rating ${currentRating}`); // ADDED LOG
-
-            // 5. Update Log
-            log.codeforces.targetProblems = selected.map(p => ({
-                problemId: `${p.contestId}${p.index}`,
-                name: p.name,
-                link: `https://codeforces.com/contest/${p.contestId}/problem/${p.index}`,
-                status: 'PENDING'
-            }));
-
-            await log.save();
-
-        } catch (error) {
-            console.error("CF Fetch Error:", error.message);
         }
+
+        // Step 4: Get all solved problem IDs
+        const allSolvedIds = new Set();
+        submissions.forEach(s => {
+            if (s.verdict === 'OK') {
+                allSolvedIds.add(`${s.problem.contestId}${s.problem.index}`);
+            }
+        });
+
+        // Step 5: Fetch all problems from Codeforces
+        console.log(`📥 [CF] Fetching problem set...`);
+        const probRes = await axios.get('https://codeforces.com/api/problemset.problems', {
+            timeout: 15000
+        });
+
+        if (probRes.data.status !== 'OK') {
+            console.error(`❌ [CF] Problem set API error: ${probRes.data.comment}`);
+            return;
+        }
+
+        const allProblems = probRes.data.result.problems || [];
+        console.log(`✅ [CF] Got ${allProblems.length} total problems`);
+
+        // Step 6: Filter unsolved problems at target rating
+        const candidates = allProblems.filter(p => 
+            p.rating === targetRating && 
+            !allSolvedIds.has(`${p.contestId}${p.index}`)
+        );
+
+        console.log(`🎯 [CF] Found ${candidates.length} unsolved problems at rating ${targetRating}`);
+
+        // Step 7: Sort by latest contests first
+        candidates.sort((a, b) => b.contestId - a.contestId);
+
+        // Step 8: Take top 4
+        const selected = candidates.slice(0, 4);
+        console.log(`✅ [CF] Selected ${selected.length} problems`);
+
+        if (selected.length === 0) {
+            console.warn(`⚠️  [CF] No problems found at rating ${targetRating}`);
+            log.codeforces.targetProblems = [];
+            return;
+        }
+
+        // Step 9: Update log with selected problems
+        log.codeforces.targetProblems = selected.map(p => ({
+            problemId: `${p.contestId}${p.index}`,
+            name: p.name,
+            link: `https://codeforces.com/contest/${p.contestId}/problem/${p.index}`,
+            rating: p.rating,
+            status: 'PENDING'
+        }));
+
+        await log.save();
+        console.log(`✅ [CF] Daily problems updated successfully`);
+
     } catch (error) {
-        console.error("CF Fetch Error (outer):", error.message);
+        console.error(`❌ [CF] Error: ${error.message}`);
+        console.error(error.stack);
     }
 }
 async function checkCodeforcesStatus(log) {
@@ -373,7 +400,7 @@ router.get('/today', async (req, res) => {
         // Return the fully populated log to the frontend
         res.json(log);
 
-        // BACKGROUND STATUS CHECKS (Don't block the initial response)
+        // BACKGROUND CHECKS (Don't block the initial response - NO MORE RESPONSES AFTER THIS)
         const now = new Date();
         if (now.getHours() >= 6 && !log.leetcode.link) {
             fetchLeetCodeLink().then(link => {
@@ -382,27 +409,6 @@ router.get('/today', async (req, res) => {
                     log.save().catch(err => console.error('Error saving LeetCode link:', err.message));
                 }
             }).catch(err => console.error('LeetCode fetch error:', err.message));
-        }
-
-        // Check for Codeforces Daily (If empty) - don't block response
-        if (!log.codeforces.targetProblems || log.codeforces.targetProblems.length === 0) {
-            fetchDailyCodeforcesProblems(log).catch(err =>
-                console.error('Background CF fetch error:', err.message)
-            );
-        }
-
-        // Check for Codeforces Daily (If empty) - don't block response
-        if (!log.codeforces.targetProblems || log.codeforces.targetProblems.length === 0) {
-            fetchDailyCodeforcesProblems(log).catch(err =>
-                console.error('Background CF fetch error:', err.message)
-            );
-        }
-
-        // Check for YouKnowWho Daily (If empty) - don't block response
-        if (!log.youKnowWho.targetProblems || log.youKnowWho.targetProblems.length === 0) {
-            fetchDailyYKWProblems(log).catch(err =>
-                console.error('Background YKW fetch error:', err)
-            );
         }
 
         // Check Status on Load (don't block response)
@@ -420,8 +426,6 @@ router.get('/today', async (req, res) => {
                 console.error('Background score calculation error:', err.message)
             );
         }
-
-        res.json(log);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

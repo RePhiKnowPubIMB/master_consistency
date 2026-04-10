@@ -5,7 +5,7 @@ import ConsistencyGraph from '../components/ConsistencyGraph';
 import ContestTracker from '../components/ContestTracker';
 import DayDetailsModal from '../components/DayDetailsModal';
 import BadgeList from '../components/BadgeList';
-import { ExternalLink, Calendar, Clock, Send, CheckCircle, Award, RefreshCw, Video, Trash2, Upload } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Send, CheckCircle, Award, RefreshCw, Video, Trash2, Upload, Star } from 'lucide-react';
 import { formatDate, isToday, getDaysUntil } from '../utils/dateUtils';
 import { saveVideo, getVideo, deleteVideo, toDateKey } from '../utils/videoStorage';
 
