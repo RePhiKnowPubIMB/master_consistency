@@ -330,33 +330,34 @@ router.get('/today', async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        // Use lean() for performance and ensure we get the latest
         let log = await DailyLog.findOne({ date: today });
 
-        // LOGGING FOR DIAGNOSIS
-        console.log(`[${new Date().toISOString()}] Today's Log Status:`, log ? "FOUND" : "NOT FOUND");
-        if (log) {
-            console.log(`[${new Date().toISOString()}] YKW Problem Count in Log:`, log.youKnowWho?.targetProblems?.length || 0);
-        }
-
-        // AUTO-CORRECTION: If log exists but is empty, delete and regenerate immediately
-        if (log && (!log.youKnowWho?.targetProblems || log.youKnowWho.targetProblems.length === 0)) {
-            console.log(`[${new Date().toISOString()}] Log was empty. Deleting and force-regenerating...`);
-            await DailyLog.deleteOne({ _id: log._id });
-            log = null;
-        }
-
-        if (!log) {
-            console.log(`[${new Date().toISOString()}] Generating new daily log...`);
+        // Force regeneration if log is missing or data is empty
+        if (!log || !log.youKnowWho?.targetProblems?.length) {
+            console.log(`[${new Date().toISOString()}] Regenerating daily log...`);
+            await DailyLog.deleteMany({ date: today });
             await generateDailyLog();
             log = await DailyLog.findOne({ date: today });
-            console.log(`[${new Date().toISOString()}] New log generated. Target problems:`, log?.youKnowWho?.targetProblems?.length || 0);
         }
 
-        // Return the log immediately to the frontend
+        // SYNCHRONOUSLY POPULATE YKW if empty
+        if (!log.youKnowWho.targetProblems || log.youKnowWho.targetProblems.length === 0) {
+            console.log(`[${new Date().toISOString()}] Fetching YKW problems synchronously...`);
+            await fetchDailyYKWProblems(log);
+            await log.save();
+        }
+
+        // SYNCHRONOUSLY POPULATE CODEFORCES if empty
+        if (!log.codeforces.targetProblems || log.codeforces.targetProblems.length === 0) {
+            console.log(`[${new Date().toISOString()}] Fetching Codeforces problems synchronously...`);
+            await fetchDailyCodeforcesProblems(log);
+            await log.save();
+        }
+
+        // Return the fully populated log to the frontend
         res.json(log);
 
-        // BACKGROUND CHECKS (Don't block the initial response)
+        // BACKGROUND STATUS CHECKS (Don't block the initial response)
         const now = new Date();
         if (now.getHours() >= 6 && !log.leetcode.link) {
             fetchLeetCodeLink().then(link => {
