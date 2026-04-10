@@ -50,6 +50,10 @@ const userConfigSchema = new mongoose.Schema({
         deadlift: { type: Number, default: 50 }, 
         biceps: { type: Number, default: 100 }
     }
+  },
+  ykw: {
+    currentTopic: { type: String, default: 'Segment Tree (Point Update Range Query)' },
+    topicProblemCount: { type: Number, default: 0 }
   }
 });
 

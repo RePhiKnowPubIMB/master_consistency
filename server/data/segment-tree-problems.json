@@ -1,0 +1,380 @@
+[
+  {
+    "serial": "",
+    "title": "1. Segment Tree for the Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/1/practice/contest/273169/problem/A",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "2. Segment Tree for the Minimum",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/1/practice/contest/273169/problem/B",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "3. Number of Minimums on a Segment",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/1/practice/contest/273169/problem/C",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "4. Inversions",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/3/practice/contest/274545/problem/A",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "5. Salary Queries",
+    "url": "https://cses.fi/problemset/task/1144/",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "6. Enemy is weak",
+    "url": "https://codeforces.com/contest/61/problem/E",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "7. Mega Inversions",
+    "url": "https://vjudge.net/problem/Kattis-megainversions",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "8. K-query",
+    "url": "https://www.spoj.com/problems/KQUERY/",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "9. Pashmak and Parmida's problem",
+    "url": "https://codeforces.com/contest/459/problem/D",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "10. Second Largest Query",
+    "url": "https://atcoder.jp/contests/abc343/tasks/abc343_f",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "11. Tournament Rigging (Minimum)",
+    "url": "https://www.codechef.com/problems/KUPSETMN",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "12. Maximum",
+    "url": "https://eolymp.com/en/problems/4473",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "13. In the country of Unlearned Lessons 2",
+    "url": "https://eolymp.com/en/problems/4482",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "14. BattleCows",
+    "url": "https://codeforces.com/contest/2185/problem/F",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "15. Swap and Range Sum",
+    "url": "https://atcoder.jp/contests/abc442/tasks/abc442_d",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "16. Dynamic Range Sum Queries",
+    "url": "https://cses.fi/problemset/task/1648/",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "17. Segment with the Maximum Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/2/practice/contest/273278/problem/A",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "18. Gambling",
+    "url": "https://codeforces.com/contest/1692/problem/H",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "19. Number of Inversions on Segment",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/4/practice/contest/274684/problem/C",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "20. Distinct Characters Queries",
+    "url": "https://codeforces.com/problemset/problem/1234/D",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "21. Distinct Values Queries",
+    "url": "https://cses.fi/problemset/task/1734",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "22. Xenia and Bit Operations",
+    "url": "https://codeforces.com/problemset/problem/339/D",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "23. Sereja and Brackets",
+    "url": "https://codeforces.com/contest/380/problem/C",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "24. Points",
+    "url": "https://codeforces.com/contest/19/problem/D",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "25. Ant colony",
+    "url": "https://codeforces.com/contest/474/problem/F",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "26. Interesting Array",
+    "url": "https://codeforces.com/contest/482/problem/B",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "27. Infinite Inversions",
+    "url": "https://codeforces.com/contest/540/problem/E",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "28. Subsequences",
+    "url": "https://codeforces.com/contest/597/problem/C",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "29. SUM and REPLACE",
+    "url": "https://codeforces.com/problemset/problem/920/F",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "30. Maximum Sum of Subsequence With Non-adjacent Elements",
+    "url": "https://leetcode.com/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "31. Hotel Queries",
+    "url": "https://cses.fi/problemset/task/1143",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "32. Increasing subsequence II",
+    "url": "https://cses.fi/problemset/task/1748",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "33. List Removals",
+    "url": "https://cses.fi/problemset/task/1749/",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "34. On Changing Tree",
+    "url": "https://codeforces.com/contest/396/problem/C",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "35. Yaroslav and Divisors",
+    "url": "https://codeforces.com/contest/301/problem/D",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "36. Clamp",
+    "url": "https://atcoder.jp/contests/abc432/tasks/abc432_e",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "37. Propagating tree",
+    "url": "https://codeforces.com/contest/383/problem/C",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "38. Bash and a Tough Math Puzzle",
+    "url": "https://codeforces.com/problemset/problem/914/D",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "39. Alternating String",
+    "url": "https://atcoder.jp/contests/abc341/tasks/abc341_e",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "40. Ksyusha and the Loaded Set",
+    "url": "https://codeforces.com/contest/2000/problem/H",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "41. Buratsuta 3",
+    "url": "https://codeforces.com/problemset/problem/2149/G",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "42. Max GEQ Sum",
+    "url": "https://codeforces.com/problemset/problem/1691/D",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "43. Kilani The Tiger (Hard)",
+    "url": "https://codeforces.com/gym/105940/problem/f",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "44. Nastiness of Segments",
+    "url": "https://codeforces.com/contest/2184/problem/G",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "45. Frequent values",
+    "url": "https://eolymp.com/en/problems/3838",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "46. Alternating Sum",
+    "url": "https://www.codechef.com/problems/ALTSUM9",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "47. Can you answer these queries III",
+    "url": "https://www.spoj.com/problems/GSS3/",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "48.  REQ",
+    "url": "https://codeforces.com/contest/594/problem/D",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "49. Misha and Permutations Summation",
+    "url": "https://codeforces.com/contest/501/problem/D",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "50. Linear Kingdom Races",
+    "url": "https://codeforces.com/contest/115/problem/E",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "51. Legacy",
+    "url": "https://codeforces.com/contest/786/problem/B",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "52. Incessant Rain",
+    "url": "https://codeforces.com/contest/2117/problem/H",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "53. Containers and compartments",
+    "url": "https://eolymp.com/en/problems/7795",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "54. Fish",
+    "url": "https://eolymp.com/en/problems/276",
+    "difficulty": "New",
+    "tags": []
+  }
+]

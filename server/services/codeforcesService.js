@@ -5,7 +5,7 @@ const fetchCodeforcesProblems = async (handle) => {
     try {
         // 1. Fetch user submissions to filter out solved problems
         const userStatusUrl = `https://codeforces.com/api/user.status?handle=${handle}`;
-        const userStatusRes = await axios.get(userStatusUrl);
+        const userStatusRes = await axios.get(userStatusUrl, { timeout: 5000 });
         const solvedProblems = new Set();
         
         if (userStatusRes.data.status === 'OK') {
@@ -18,7 +18,7 @@ const fetchCodeforcesProblems = async (handle) => {
 
         // 2. Fetch problems with rating 1700
         const problemsUrl = 'https://codeforces.com/api/problemset.problems?tags=1700';
-        const problemsRes = await axios.get(problemsUrl);
+        const problemsRes = await axios.get(problemsUrl, { timeout: 5000 });
         
         if (problemsRes.data.status !== 'OK') {
             throw new Error('Failed to fetch problems from Codeforces');

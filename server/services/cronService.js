@@ -30,12 +30,12 @@ const generateDailyLog = async () => {
         // 2. Workout Level Calculator
         const daysPassed = Math.floor((today - userConfig.workout.startDate) / (1000 * 60 * 60 * 24));
         const level = Math.floor(daysPassed / userConfig.workout.cycleDays);
-        
+
         const workoutTargets = {};
         if (!isRestDay) {
             for (const [exercise, base] of Object.entries(userConfig.workout.baseStats)) {
                 let increment = userConfig.workout.increment[exercise] || 0;
-                
+
                 // Force running increment to 0 as per user request
                 if (exercise === 'running') {
                     increment = 0;
@@ -46,21 +46,28 @@ const generateDailyLog = async () => {
             }
         }
 
-        // 3. Codeforces Fetcher
-        const cfProblems = await fetchCodeforcesProblems(userConfig.username);
+        // 3. Codeforces Fetcher (fire-and-forget to avoid blocking)
+        fetchCodeforcesProblems(userConfig.username).catch(err =>
+            console.error('Background CF problems fetch error:', err.message)
+        );
 
-        // 3.5. YouKnowWho Fetcher
-        const youKnowWhoProblem = await fetchDailyYouKnowWhoProblem();
+        // 3.5. YouKnowWho Problem (instant from static catalog)
+        let youKnowWhoProblem = null;
+        try {
+            youKnowWhoProblem = await fetchDailyYouKnowWhoProblem(today);
+        } catch (err) {
+            console.error('YouKnowWho fetch error:', err.message);
+        }
 
         // 4. Revision Logic (7 days ago)
         const sevenDaysAgo = new Date(today);
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        
-        const oldLog = await DailyLog.findOne({ 
-            date: { 
-                $gte: sevenDaysAgo, 
-                $lt: new Date(sevenDaysAgo.getTime() + 24 * 60 * 60 * 1000) 
-            } 
+
+        const oldLog = await DailyLog.findOne({
+            date: {
+                $gte: sevenDaysAgo,
+                $lt: new Date(sevenDaysAgo.getTime() + 24 * 60 * 60 * 1000)
+            }
         });
 
         const revisionProblems = oldLog ? oldLog.codeforces.targetProblems.map(p => ({
@@ -84,7 +91,7 @@ const generateDailyLog = async () => {
             date: today,
             isRestDay,
             codeforces: {
-                targetProblems: cfProblems,
+                targetProblems: [],  // Will be fetched in background
                 solvedCount: 0
             },
             revision: {
@@ -106,13 +113,13 @@ const generateDailyLog = async () => {
                 targets: workoutTargets
             },
             youKnowWho: youKnowWhoProblem ? {
-                link: youKnowWhoProblem.link,
                 name: youKnowWhoProblem.name,
+                link: youKnowWhoProblem.link,
                 difficulty: youKnowWhoProblem.difficulty,
+                topic: youKnowWhoProblem.topic,
                 importance: youKnowWhoProblem.importance,
-                topic: youKnowWhoProblem.topic || 'General',
                 status: 'PENDING'
-            } : null
+            } : { status: 'PENDING' }
         });
 
         await newLog.save();

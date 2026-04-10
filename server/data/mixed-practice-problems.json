@@ -1,0 +1,2186 @@
+[
+  {
+    "serial": "",
+    "title": "1. Path Queries",
+    "url": "https://cses.fi/problemset/task/1138",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "2. Sum of Four Values",
+    "url": "https://cses.fi/problemset/task/1642",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "3. Blood Cousins Return",
+    "url": "https://codeforces.com/contest/246/problem/E",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "4. Product on the segment by modulo",
+    "url": "https://www.codechef.com/problems/SEGPROD",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "5. Crayon",
+    "url": "https://www.spoj.com/problems/CRAYON/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "6. Order Statistic Set",
+    "url": "https://www.spoj.com/problems/ORDERSET/en/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "7. Zero Query",
+    "url": "https://www.spoj.com/problems/ZQUERY/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "8. Fixed-Length Paths II",
+    "url": "https://cses.fi/problemset/task/2081",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "9. Disconnected Graph",
+    "url": "https://codeforces.com/gym/100551/problem/E",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "10. Minimum Sum",
+    "url": "https://atcoder.jp/contests/agc005/tasks/agc005_b",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "11. Pashmak and Parmida's problem",
+    "url": "https://codeforces.com/contest/459/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "12. Two Sequence Queries",
+    "url": "https://atcoder.jp/contests/abc357/tasks/abc357_f",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "13. Reachability Query",
+    "url": "https://atcoder.jp/contests/abc420/tasks/abc420_e",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "14. Colorful Queries",
+    "url": "https://codeforces.com/gym/104308/problem/I",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "15. Smaller Sum",
+    "url": "https://atcoder.jp/contests/abc339/tasks/abc339_g",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "16. Range Kth Smallest",
+    "url": "https://judge.yosupo.jp/problem/range_kth_smallest",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "17. Static Range Minimum Queries",
+    "url": "https://cses.fi/problemset/task/1647",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "18. Dominant Indices",
+    "url": "https://codeforces.com/contest/1009/problem/F",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "19. Inversion Count",
+    "url": "https://vjudge.net/problem/SPOJ-INVCNT",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "20. Sum of Two Values",
+    "url": "https://cses.fi/problemset/task/1640",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "21. Ghost Town",
+    "url": "https://www.spoj.com/problems/COUNT1IT/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "22. To the moon",
+    "url": "https://www.spoj.com/problems/TTM/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "23. Inversions",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/3/practice/contest/274545/problem/A",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "24. Experience",
+    "url": "https://codeforces.com/edu/course/2/lesson/7/1/practice/contest/289390/problem/C",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "25. Robin Hood Archery",
+    "url": "https://codeforces.com/contest/2014/problem/H",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "26. Next Greater Element I",
+    "url": "https://leetcode.com/problems/next-greater-element-i/description/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "27. Fixed-Length Paths I",
+    "url": "https://cses.fi/problemset/task/2080",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "28. Static Range Sum with Upper Bound",
+    "url": "https://judge.yosupo.jp/problem/static_range_sum_with_upper_bound",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "29. Assignment and Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/F",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "30. Dynamic Graph Vertex Add Component Sum",
+    "url": "https://judge.yosupo.jp/problem/dynamic_graph_vertex_add_component_sum",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "31. QTREE3 - Query on a tree again!",
+    "url": "https://www.spoj.com/problems/QTREE3/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "32. Graph and Queries",
+    "url": "https://codeforces.com/contest/1416/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "33. Nim Cheater",
+    "url": "https://codeforces.com/gym/103119/problem/I",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "34. SUBSTRINGS COUNT",
+    "url": "https://www.hackerearth.com/problem/algorithm/substrings-count-3/",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "35. Road Reform",
+    "url": "https://codeforces.com/contest/1468/problem/J",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "36. Hitchhiking in the Baltic States",
+    "url": "https://codeforces.com/problemset/problem/809/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "37. ILKQUERY2 - I Love Kd-Trees II",
+    "url": "https://www.spoj.com/problems/ILKQUERY2/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "38. Query on a tree V",
+    "url": "https://www.spoj.com/problems/QTREE5/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "39. Closest Equals",
+    "url": "https://codeforces.com/problemset/problem/522/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "40. Alternating String",
+    "url": "https://atcoder.jp/contests/abc341/tasks/abc341_e",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "41. Forbidden Sum",
+    "url": "https://www.codechef.com/problems/FRBSUM",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "42. Random Update Query",
+    "url": "https://atcoder.jp/contests/abc332/tasks/abc332_f",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "43. Ivan And Mega Queries",
+    "url": "https://vjudge.net/problem/Gym-104120I",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "44. Joker",
+    "url": "https://codeforces.com/contest/1386/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "45. Peterson Polyglot",
+    "url": "https://codeforces.com/problemset/problem/778/C",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "46. Bob and Continued Fractions",
+    "url": "https://dmoj.ca/problem/dmopc19c7p4",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "47. Mr. Kitayuta, the Treasure Hunter",
+    "url": "https://codeforces.com/contest/505/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "48. Database Query Engine",
+    "url": "https://codeforces.com/gym/100861/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "49. Finding a Centroid",
+    "url": "https://cses.fi/problemset/task/2079",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "50. Gambling",
+    "url": "https://codeforces.com/contest/1692/problem/H",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "51. Nearest Smaller Values",
+    "url": "https://cses.fi/problemset/task/1645",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "52. ILKQUERY - I LOVE Kd-TREES",
+    "url": "https://www.spoj.com/problems/ILKQUERY/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "53. Ancient Berland Roads",
+    "url": "https://www.codechef.com/problems/ABROADS",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "54. Line up",
+    "url": "https://www.spoj.com/problems/KOILINE/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "55. Mass Change Queries",
+    "url": "https://codeforces.com/problemset/problem/911/G",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "56. Choosing Balls",
+    "url": "https://codeforces.com/contest/264/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "57. Powerful Array",
+    "url": "https://codeforces.com/contest/86/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "58. Count maxima on an interval",
+    "url": "https://codeforces.com/group/1rv4rhCsHp/contest/102954/problem/A",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "59. Nested Ranges Count",
+    "url": "https://cses.fi/problemset/task/2169",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "60. Connect and Disconnect",
+    "url": "https://codeforces.com/gym/100551/problem/A",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "61. Query on a tree",
+    "url": "https://www.spoj.com/problems/QTREE/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "62. Distinct Colors",
+    "url": "https://cses.fi/problemset/task/1139/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "63. K-th Number",
+    "url": "https://www.spoj.com/problems/MKTHNUM/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "64. Circular RMQ",
+    "url": "https://codeforces.com/problemset/problem/52/C",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "65. Range Affine Range Sum",
+    "url": "https://judge.yosupo.jp/problem/range_affine_range_sum",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "66. Amer and Graphs",
+    "url": "https://codeforces.com/gym/101808/problem/B",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "67. Points on Plane",
+    "url": "https://codeforces.com/contest/577/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "68. Klasika",
+    "url": "https://oj.uz/problem/view/COCI20_klasika",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "69. Tree and Queries",
+    "url": "https://codeforces.com/problemset/problem/375/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "70. Toll",
+    "url": "https://oj.uz/problem/view/BOI17_toll",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "71. Bipartite Graph",
+    "url": "https://codeforces.com/edu/course/2/lesson/7/2/practice/contest/289391/problem/I",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "72. Sliding Window Median",
+    "url": "https://cses.fi/problemset/task/1076",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "73. Points",
+    "url": "https://codeforces.com/contest/19/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "74. Pishty and tree",
+    "url": "https://www.codechef.com/JULY17/problems/PSHTTR",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "75. Descent of Dragons",
+    "url": "https://qoj.ac/problem/6608",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "76. Hanoi Factory",
+    "url": "https://codeforces.com/contest/777/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "77. The Cabins in the Woods",
+    "url": "https://codedrills.io/contests/icpc-asia-west-continent-final-contest-2023/problems/the-cabins-in-the-woods",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "78. Tree Queries",
+    "url": "https://www.codechef.com/problems/P8169",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "79. Close Vertices",
+    "url": "https://codeforces.com/contest/293/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "80. Tree Inversion",
+    "url": "https://atcoder.jp/contests/abc337/tasks/abc337_g",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "81. Mahmoud and Ehab and yet another xor task",
+    "url": "https://codeforces.com/contest/959/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "82. Ksyusha and the Loaded Set",
+    "url": "https://codeforces.com/contest/2000/problem/H",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "83. Till I Collapse",
+    "url": "https://codeforces.com/contest/786/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "84. Bipartite Checking",
+    "url": "https://codeforces.com/contest/813/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "85. Radio stations",
+    "url": "https://codeforces.com/contest/762/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "86. Static Range Inversions Query",
+    "url": "https://judge.yosupo.jp/problem/static_range_inversions_query",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "87. Two Sets",
+    "url": "https://codeforces.com/contest/468/problem/B",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "88. LWDB",
+    "url": "https://codeforces.com/gym/100633/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "89. Secret",
+    "url": "https://oj.uz/problem/view/JOI14_secret",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "90. Lipshitz Sequence",
+    "url": "https://codeforces.com/contest/602/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "91. XOR on Segment",
+    "url": "https://codeforces.com/problemset/problem/242/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "92. Can you answer these queries VII",
+    "url": "https://www.spoj.com/problems/GSS7/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "93. Range Reverse Range Sum",
+    "url": "https://judge.yosupo.jp/problem/range_reverse_range_sum",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "94. Induced Subgraph Queries",
+    "url": "https://codeforces.com/contest/2129/problem/E",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "95. Greatest Chicken Dish",
+    "url": "https://codeforces.com/gym/101991/problem/G",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "96. Petya and Array",
+    "url": "https://codeforces.com/contest/1042/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "97. Modulo Queries",
+    "url": "https://codeforces.com/gym/105009/problem/L",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "98. Sink",
+    "url": "https://codeforces.com/problemset/problem/2158/E",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "99. Festival Signs",
+    "url": "https://codeforces.com/gym/105789/problem/F",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "100. 2009 - Loza",
+    "url": "https://dmoj.ca/problem/coi09p3",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "101. Li Hua and Path",
+    "url": "https://codeforces.com/contest/1797/problem/F",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "102. Boring Queries",
+    "url": "https://codeforces.com/contest/1422/problem/F",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "103. Please, another Queries on Array?",
+    "url": "https://codeforces.com/problemset/problem/1114/F",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "104. Omsk Metro (hard version)",
+    "url": "https://codeforces.com/problemset/problem/1843/F2?__cf_chl_tk=u0yRPPcbTIXfvDZCZK2tbTbt7_xvclqUIFlBl2WHz0s-1764764131-1.0.1.1-nhwm_.Kc7f_jACfdQHC3x8hS0KuAsVKzRmlzIFoGSWk",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "105. Comfortably Numb",
+    "url": "https://codeforces.com/problemset/problem/1777/F",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "106. Games",
+    "url": "https://oj.uz/problem/view/IOI13_game",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "107. Fish",
+    "url": "https://eolymp.com/en/problems/276",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "108. Range Knapsack Query",
+    "url": "https://atcoder.jp/contests/abc426/tasks/abc426_g",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "109. 2011 - Tree Rotations",
+    "url": "https://szkopul.edu.pl/problemset/problem/sUe3qzxBtasek-RAWmZaxY_p/site/?key=statement",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "110. Magic Number Group",
+    "url": "https://codeforces.com/gym/103366/problem/G",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "111. Range Updates and Sums",
+    "url": "https://cses.fi/problemset/task/1735",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "112. Sliding Window Cost",
+    "url": "https://cses.fi/problemset/task/1077",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "113. New Barns",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=817",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "114. Vertex Set Path Composite",
+    "url": "https://judge.yosupo.jp/problem/vertex_set_path_composite",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "115.  MinOr Tree",
+    "url": "https://codeforces.com/contest/1624/problem/G",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "116. Count on Tree",
+    "url": "https://www.spoj.com/problems/COT/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "117. Minimum Xor On Segment",
+    "url": "https://www.codechef.com/LTIME109A/problems/MINXORSEG",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "118. Pudding Monsters",
+    "url": "https://codeforces.com/contest/526/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "119. Max GEQ Sum",
+    "url": "https://codeforces.com/problemset/problem/1691/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "120. Dynamic Connectivity Offline",
+    "url": "https://codeforces.com/edu/course/2/lesson/7/3/practice/contest/289392/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "121. Ada and Aphids",
+    "url": "https://www.spoj.com/problems/ADAAPHID/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "122. Insert",
+    "url": "https://atcoder.jp/contests/abc392/tasks/abc392_f",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "123. Bosses",
+    "url": "https://codeforces.com/edu/course/2/lesson/7/2/practice/contest/289391/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "124. Addition and Minimum",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/A",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "125. Lomsat gelral",
+    "url": "https://codeforces.com/contest/600/problem/E",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "126. Ciel the Commander",
+    "url": "https://codeforces.com/contest/321/problem/C",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "127. Path Queries II",
+    "url": "https://cses.fi/problemset/task/2134",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "128. Prime Divisor on Tree Path",
+    "url": "https://toph.co/p/prime-divisor-on-tree-path",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "129. XORSHIFT",
+    "url": "https://oj.vnoi.info/problem/mofkcup_r1_e",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "130. K-Query Online",
+    "url": "https://www.spoj.com/problems/KQUERYO/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "131. Triple Index",
+    "url": "https://atcoder.jp/contests/abc293/tasks/abc293_g",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "132. Mean of array",
+    "url": "https://www.spoj.com/problems/MEANARR/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "133. Number of Minimums on a Segment",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/1/practice/contest/273169/problem/C",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "134. Cyclic Merging",
+    "url": "https://codeforces.com/problemset/problem/2166/C",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "135. Extending Set of Points",
+    "url": "https://codeforces.com/contest/1140/problem/F",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "136. Sum of Subarray Minimums",
+    "url": "https://leetcode.com/problems/sum-of-subarray-minimums/description/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "137. Estelle’s Supper Box",
+    "url": "https://codebreaker.xyz/problem/supperbox",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "138. Treediff",
+    "url": "https://vjudge.net/problem/SGU-507",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "139. Second Largest Query",
+    "url": "https://atcoder.jp/contests/abc343/tasks/abc343_f",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "140. XOR and Favorite Number",
+    "url": "https://codeforces.com/contest/617/problem/E",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "141. Quantity of Strings",
+    "url": "https://codeforces.com/contest/150/problem/B",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "142. Points and distances",
+    "url": "https://www.hackerearth.com/problem/algorithm/septembereasy-points-and-distances-d30d0e6b/",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "143. Range Queries and Copies",
+    "url": "https://cses.fi/problemset/task/1737",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "144. Grass Planting",
+    "url": "https://www.spoj.com/problems/GRASSPLA/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "145. 2011 - Race",
+    "url": "https://oj.uz/problem/view/IOI11_race",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "146. Yet Another Problem About Pairs Satisfying an Inequality",
+    "url": "https://codeforces.com/problemset/problem/1703/F",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "147. Multiplication and Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/B",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "148. The Bridge on the River Kawaii",
+    "url": "https://codeforces.com/gym/104668/problem/B",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "149. Graph Inclusion",
+    "url": "https://codeforces.com/contest/2069/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "150. Mahmoud and a xor trip",
+    "url": "https://codeforces.com/problemset/problem/766/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "151. Vaporeon",
+    "url": "https://www.infoarena.ro/problema/vaporeon",
+    "difficulty": "Very Hard"
+  },
+  {
+    "serial": "",
+    "title": "152. One Occurrence",
+    "url": "https://codeforces.com/contest/1000/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "153. Disruption",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=842",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "154. Skyline Photo",
+    "url": "https://codeforces.com/contest/1483/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "155. Ann and Books",
+    "url": "https://codeforces.com/contest/877/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "156. Kefa and Watch",
+    "url": "https://codeforces.com/problemset/problem/580/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "157. SUM and REPLACE",
+    "url": "https://codeforces.com/problemset/problem/920/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "158. Milk Visits",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=970",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "159. Ivan and Burgers",
+    "url": "https://codeforces.com/problemset/problem/1100/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "160. Wormhole Sort",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=992",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "161. Greetings",
+    "url": "https://codeforces.com/problemset/problem/1915/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "162. Dynamic Collection",
+    "url": "https://codeforces.com/gym/104375/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "163. Dynamic Range Sum Queries",
+    "url": "https://cses.fi/problemset/task/1648/",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "164. Little Elephant and Array",
+    "url": "https://codeforces.com/contest/220/problem/B",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "165. Imbalanced Array",
+    "url": "https://codeforces.com/problemset/problem/817/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "166. Non-Decreasing Subsequences",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=997",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "167. Exquisite Array",
+    "url": "https://codeforces.com/contest/2184/problem/E",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "168. Tree Requests",
+    "url": "https://codeforces.com/contest/570/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "169. Addition and Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "170. Prime Distance On Tree",
+    "url": "https://www.codechef.com/problems/PRIMEDST",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "171. Cow Land",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=921",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "172. Addition on Segments",
+    "url": "https://codeforces.com/contest/981/problem/E",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "173. Kth Number",
+    "url": "https://www.hackerrank.com/contests/morgan-stanley-2015/challenges/wet-shark-and-kth-largest-number",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "174. Omg Graph",
+    "url": "https://codeforces.com/contest/2117/problem/G",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "175. Union on Tree",
+    "url": "https://www.codechef.com/problems/BTREE",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "176. GCD 2010",
+    "url": "https://acm.timus.ru/problem.aspx?space=1&num=1846",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "177. Bitwise OR and AND",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "178. Static Range Mode Query",
+    "url": "https://judge.yosupo.jp/problem/static_range_mode_query",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "179. Sliding Window Inversions",
+    "url": "https://cses.fi/problemset/task/3223",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "180. Army Creation",
+    "url": "https://codeforces.com/contest/813/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "181.  Palindromes in a Tree",
+    "url": "https://codeforces.com/contest/914/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "182. Matrix Maximum Sum",
+    "url": "https://www.codechef.com/FEB16/problems/MTMXSUM/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "183. Subtrees And Paths",
+    "url": "https://www.hackerrank.com/challenges/subtrees-and-paths/problem",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "184. Subsequence Sum Queries",
+    "url": "https://codeforces.com/gym/101741/problem/J",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "185. Subsequences",
+    "url": "https://codeforces.com/contest/597/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "186. Count Paths",
+    "url": "https://codeforces.com/contest/1923/problem/E",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "187. Chefina and Beautiful Pairs",
+    "url": "https://www.codechef.com/problems/DECOPAIR",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "188. Best Edge Weight",
+    "url": "https://codeforces.com/problemset/problem/827/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "189.  Inverse and K-th one",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/3/practice/contest/280799/problem/B",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "190. Mocha and Diana (Hard Version)",
+    "url": "https://codeforces.com/contest/1559/problem/D2",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "191. Sign on Fence",
+    "url": "https://codeforces.com/contest/484/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "192. Digit Tree",
+    "url": "https://codeforces.com/contest/716/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "193. Buratsuta 3",
+    "url": "https://codeforces.com/problemset/problem/2149/G",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "194. Pair of Topics",
+    "url": "https://vjudge.net/problem/CodeForces-1324D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "195. Quick Tortoise",
+    "url": "https://codeforces.com/contest/232/problem/E",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "196. DIFERENCIJA",
+    "url": "https://www.spoj.com/problems/DIFERENC/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "197. Modulo 3",
+    "url": "https://codeforces.com/contest/2104/problem/G",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "198.  REQ",
+    "url": "https://codeforces.com/contest/594/problem/D",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "199. Selling RNA Strands",
+    "url": "https://oj.uz/problem/view/JOI16_selling_rna",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "200. Ehab and the Big Finale",
+    "url": "https://codeforces.com/problemset/problem/1174/F",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "201. InvNet Disorder Analysis",
+    "url": "https://codeforces.com/group/Rilx5irOux/contest/627262/problem/C",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "202. Queries",
+    "url": "https://codeforces.com/gym/100739/problem/A",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "203. Red-Black Cobweb",
+    "url": "https://codeforces.com/contest/833/problem/D",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "204. Frequency Mismatch (Hard Version)",
+    "url": "https://codeforces.com/contest/1957/problem/F2",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "205. Min Max Sum",
+    "url": "https://csacademy.com/contest/round-35/task/min-max-sum/statement/",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "206. Strongest Friendship Group",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=1259",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "207. A Museum Robbery",
+    "url": "https://codeforces.com/contest/601/problem/E",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "208. Josephus Problem II",
+    "url": "https://cses.fi/problemset/task/2163",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "209. Chef and Prime Queries",
+    "url": "https://www.codechef.com/problems/PRMQ",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "210. Dynamic Connectivity",
+    "url": "https://cses.fi/problemset/task/2133",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "211. Diverging Directions",
+    "url": "https://codeforces.com/contest/838/problem/B",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "212. Jeff and Removing Periods",
+    "url": "https://codeforces.com/contest/351/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "213. Lampice",
+    "url": "https://dmoj.ca/problem/coci19c3p4",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "214. Unbelievable Array",
+    "url": "https://toph.co/p/unbelievable-array",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "215. Mike and Feet",
+    "url": "https://codeforces.com/problemset/problem/547/B",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "216. Short Code",
+    "url": "https://codeforces.com/contest/965/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "217. Black-and-White Tree",
+    "url": "https://www.codechef.com/problems/BLWHTREE",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "218. Sereja and Brackets",
+    "url": "https://codeforces.com/contest/380/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "219. Count Descendants",
+    "url": "https://atcoder.jp/contests/abc202/tasks/abc202_e",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "220. Destiny",
+    "url": "https://codeforces.com/problemset/problem/840/D",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "221. Sherlock's bet to Moriarty",
+    "url": "https://codeforces.com/contest/776/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "222. Road Construction",
+    "url": "https://cses.fi/problemset/task/1676",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "223. Enemy is weak",
+    "url": "https://codeforces.com/contest/61/problem/E",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "224. Ivan Pesic and His World Tour",
+    "url": "https://www.codechef.com/problems/QRYLAND",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "225. Hossam and Range Minimum Query",
+    "url": "https://codeforces.com/contest/1771/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "226. Norma",
+    "url": "https://dmoj.ca/problem/coci14c2p6",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "227. Range Add Range Min",
+    "url": "https://judge.yosupo.jp/problem/range_add_range_min",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "228. Functions On The Segments",
+    "url": "https://codeforces.com/problemset/problem/837/G",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "229. Cutting a graph",
+    "url": "https://codeforces.com/edu/course/2/lesson/7/1/practice/contest/289390/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "230. Another Travelling Salesman Problem",
+    "url": "https://www.spoj.com/problems/YOSALES/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "231. Prefix Sum Queries",
+    "url": "https://cses.fi/problemset/task/2166",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "232. Estimating progress",
+    "url": "https://www.codechef.com/problems/STDPRGS",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "233. The Grass Type",
+    "url": "https://www.hackerearth.com/practice/algorithms/graphs/depth-first-search/practice-problems/algorithm/the-grass-type/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "234. Subway Lines",
+    "url": "https://codeforces.com/gym/101908/problem/L",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "235. Mega Inversions",
+    "url": "https://vjudge.net/problem/Kattis-megainversions",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "236. MEX Queries",
+    "url": "https://codeforces.com/problemset/problem/817/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "237. GCD Counting",
+    "url": "https://codeforces.com/problemset/problem/990/G",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "238. Observing the Tree",
+    "url": "https://www.codechef.com/problems/QUERY",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "239. 「HNOI2016」序列",
+    "url": "https://loj.ac/p/2051",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "240. Arpa’s letter-marked tree and Mehrdad’s Dokhtar-kosh paths",
+    "url": "https://codeforces.com/contest/741/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "241. Village (Maximum)",
+    "url": "https://codeforces.com/contest/1387/problem/B2",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "242. Clamp",
+    "url": "https://atcoder.jp/contests/abc432/tasks/abc432_e",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "243. G2. Big Wins! (hard version)",
+    "url": "https://codeforces.com/contest/2126/problem/G2",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "244. Promotion Counting",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=696",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "245. Add Arithmetic Progression On Segment",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/4/practice/contest/280801/problem/B",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "246. Cloning",
+    "url": "https://www.codechef.com/problems/CLONEME",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "247. BattleCows",
+    "url": "https://codeforces.com/contest/2185/problem/F",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "248. Consecutive Letters",
+    "url": "https://www.spoj.com/problems/CONSEC/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "249. Birthday gift",
+    "url": "https://oj.uz/problem/view/IZhO18_treearray",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "250. Tree Query",
+    "url": "https://codeforces.com/gym/100570/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "251. MEX Query",
+    "url": "https://codeforces.com/group/Rilx5irOux/contest/636870/problem/E",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "252. Lucky Queries",
+    "url": "https://codeforces.com/contest/145/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "253. Beauty and The Tree",
+    "url": "https://codeforces.com/gym/101864/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "254. Imbalance Value of a Tree",
+    "url": "https://codeforces.com/contest/915/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "255. Odd Mineral Resource",
+    "url": "https://codeforces.com/contest/1479/problem/D",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "256. Black and White Tree",
+    "url": "https://www.codechef.com/problems/GERALD2",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "257. Gotham PD",
+    "url": "https://www.codechef.com/problems/GPD",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "258. Interesting Array",
+    "url": "https://codeforces.com/contest/482/problem/B",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "259. Restructuring Company",
+    "url": "https://codeforces.com/edu/course/2/lesson/7/2/practice/contest/289391/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "260. Space Harbour",
+    "url": "https://codeforces.com/contest/1924/problem/B",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "261. Distinct Characters Queries",
+    "url": "https://codeforces.com/problemset/problem/1234/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "262. The Tree",
+    "url": "https://codeforces.com/contest/1017/problem/G",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "263. The Classic Problem",
+    "url": "https://codeforces.com/contest/464/problem/E",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "264. Yet Another Tree Problem",
+    "url": "https://www.codechef.com/FEB19A/problems/TRDST/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "265. The Cost of Speed Limits",
+    "url": "https://open.kattis.com/problems/speedlimit2",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "266. Function! Not Again!!",
+    "url": "https://lightoj.com/problem/function-not-again",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "267. Factories",
+    "url": "https://oj.uz/problem/view/JOI14_factories",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "268. Dividing Kingdom II",
+    "url": "https://codeforces.com/problemset/problem/687/D",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "269. Misha and Permutations Summation",
+    "url": "https://codeforces.com/contest/501/problem/D",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "270.  DZY Loves Fibonacci Numbers",
+    "url": "https://codeforces.com/contest/446/problem/C",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "271. 2019 - Virus",
+    "url": "https://qoj.ac/contest/295/problem/1127",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "272. Max Flow",
+    "url": "https://usaco.org/current/index.php?page=viewproblem2&cpid=576",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "273. Mountain Time",
+    "url": "https://csacademy.com/contest/archive/task/mountain-time/statement/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "274. Good Path on a Tree",
+    "url": "https://lightoj.com/problem/good-path",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "275. Happy Life in University",
+    "url": "https://codeforces.com/contest/1916/problem/E",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "276. Gangsters of Treeland",
+    "url": "https://www.codechef.com/problems/MONOPLOY",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "277. Frequent values",
+    "url": "https://eolymp.com/en/problems/3838",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "278. XOR Tree",
+    "url": "https://codeforces.com/problemset/problem/1709/E",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "279. Tree Path Price Queries",
+    "url": "https://toph.co/p/tree-path-price-queries",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "280. Poachers",
+    "url": "https://codeforces.com/problemset/problem/1585/G",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "281. Awesome Shawarma",
+    "url": "https://codeforces.com/gym/101991/problem/A",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "282. Exercise Route",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=901",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "283. In the country of Unlearned Lessons 2",
+    "url": "https://eolymp.com/en/problems/4482",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "284. Noble Knight's Path",
+    "url": "https://codeforces.com/contest/226/problem/E",
+    "difficulty": "Very Hard"
+  },
+  {
+    "serial": "",
+    "title": "285. Parking",
+    "url": "https://codeforces.com/edu/course/2/lesson/7/2/practice/contest/289391/problem/B",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "286. Range Update Point Query",
+    "url": "https://codeforces.com/contest/1791/problem/F",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "287. Making Friends on Joitter is Fun",
+    "url": "https://oj.uz/problem/view/JOI20_joitter2",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "288. Segment with the Maximum Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/2/practice/contest/273278/problem/A",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "289. QTREE4 - Query on a tree IV",
+    "url": "https://www.spoj.com/problems/QTREE4/",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "290. The Child and Sequence",
+    "url": "https://codeforces.com/contest/438/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "291. Anansi's Cobweb",
+    "url": "https://acm.timus.ru/problem.aspx?space=1&num=1671",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "292. Rigged Roads",
+    "url": "https://oj.uz/problem/view/NOI19_riggedroads",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "293. Boring Segments",
+    "url": "https://codeforces.com/contest/1555/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "294. Tree Game",
+    "url": "https://tlx.toki.id/problems/troc-14/H/",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "295. Mahmoud and a Dictionary",
+    "url": "https://codeforces.com/contest/766/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "296. Number of Inversions on Segment",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/4/practice/contest/274684/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "297. Count It",
+    "url": "https://www.codechef.com/problems/CNTIT",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "298. Xenia and Tree",
+    "url": "https://codeforces.com/problemset/problem/342/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "299. Maximum",
+    "url": "https://eolymp.com/en/problems/4473",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "300. Reactor",
+    "url": "https://codeforces.com/gym/106084/problem/I",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "301. ...Wait for it...",
+    "url": "https://codeforces.com/contest/696/problem/E",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "302. Unionfind",
+    "url": "https://judge.yosupo.jp/problem/unionfind",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "303. Serge and Dining Room",
+    "url": "https://codeforces.com/contest/1179/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "304. Path Queries",
+    "url": "https://codeforces.com/contest/1213/problem/G",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "305. BST maintenance",
+    "url": "https://www.hackerrank.com/challenges/bst-maintenance/problem",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "306. Tree or not Tree",
+    "url": "https://codeforces.com/contest/117/problem/E",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "307. Hotel Queries",
+    "url": "https://cses.fi/problemset/task/1143",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "308. Tree Queries",
+    "url": "https://codeforces.com/contest/1254/problem/D",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "309. Kilani The Tiger (Hard)",
+    "url": "https://codeforces.com/gym/105940/problem/f",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "310.  Sereja and D",
+    "url": "https://www.codechef.com/problems/SEAD",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "311. Polynomial Queries",
+    "url": "https://cses.fi/problemset/task/1736",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "312. Freezing with Style",
+    "url": "https://codeforces.com/contest/150/problem/E",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "313. Legacy",
+    "url": "https://codeforces.com/contest/786/problem/B",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "314. Roads not only in Berland",
+    "url": "https://codeforces.com/contest/25/problem/D",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "315. Greedy Subsequences",
+    "url": "https://codeforces.com/contest/1132/problem/G",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "316. Bob Equilibrium",
+    "url": "https://dmoj.ca/problem/dmopc19c7p6",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "317. Two Currencies",
+    "url": "https://oj.uz/problem/view/JOI23_currencies",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "318. Drazil and Park",
+    "url": "https://codeforces.com/contest/516/problem/C",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "319. Alternating Sum",
+    "url": "https://www.codechef.com/problems/ALTSUM9",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "320. Weak Memory",
+    "url": "https://codeforces.com/problemset/problem/187/C",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "321. Cats or Dogs",
+    "url": "https://oj.uz/problem/view/JOI18_catdog",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "322. Terminus Est",
+    "url": "https://dmoj.ca/problem/stnbd6",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "323.  Double Tree",
+    "url": "https://codeforces.com/contest/1140/problem/G",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "324. Addition and First element at least X",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/3/practice/contest/280799/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "325. Mocha and Diana (Easy Version)",
+    "url": "https://codeforces.com/contest/1559/problem/D1",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "326. List Removals",
+    "url": "https://cses.fi/problemset/task/1749/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "327. Tourism",
+    "url": "https://oj.uz/problem/view/JOI23_tourism",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "328. News Distribution",
+    "url": "https://codeforces.com/problemset/problem/1167/C",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "329. Tournament Rigging (Minimum)",
+    "url": "https://www.codechef.com/problems/KUPSETMN",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "330. Fibonacci Numbers on Tree",
+    "url": "https://www.codechef.com/problems/FIBTREE",
+    "difficulty": "Very Hard"
+  },
+  {
+    "serial": "",
+    "title": "331. Synchronization",
+    "url": "https://oj.uz/problem/view/JOI13_synchronization",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "332. A Simple Task",
+    "url": "https://codeforces.com/problemset/problem/558/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "333. Infinite Inversions",
+    "url": "https://codeforces.com/contest/540/problem/E",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "334. Assignment and Maximal Segment",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/3/practice/contest/280799/problem/A",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "335. Daylight",
+    "url": "https://codeforces.com/gym/102114/problem/D",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "336.  Non-Decreasing Colorful Path",
+    "url": "https://atcoder.jp/contests/abc335/tasks/abc335_e",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "337. Marble Jars",
+    "url": "https://codeforces.com/group/Rilx5irOux/contest/548472/problem/K",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "338. Time Traveller Imaxblue",
+    "url": "https://dmoj.ca/problem/tc19summerh",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "339. Moocast",
+    "url": "https://usaco.org/index.php?page=viewproblem2&cpid=669",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "340. Segment Tree for the Minimum",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/1/practice/contest/273169/problem/B",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "341. Propagating tree",
+    "url": "https://codeforces.com/contest/383/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "342. Water Tree",
+    "url": "https://codeforces.com/problemset/problem/343/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "343. Nastiness of Segments",
+    "url": "https://codeforces.com/contest/2184/problem/G",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "344. Mon and the Magical Array",
+    "url": "https://codeforces.com/group/Rilx5irOux/contest/634004/problem/E",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "345. Incessant Rain",
+    "url": "https://codeforces.com/contest/2117/problem/H",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "346. Addition Robot",
+    "url": "https://codeforces.com/problemset/problem/1252/K",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "347. Ant colony",
+    "url": "https://codeforces.com/contest/474/problem/F",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "348. Linear Kingdom Races",
+    "url": "https://codeforces.com/contest/115/problem/E",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "349. K-query",
+    "url": "https://www.spoj.com/problems/KQUERY/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "350. Remove at the lowest cost",
+    "url": "https://codeforces.com/contest/2176/problem/E",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "351. Al Fine (Maximizing Version)",
+    "url": "https://codeforces.com/contest/2187/problem/F1",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "352. Swap and Range Sum",
+    "url": "https://atcoder.jp/contests/abc442/tasks/abc442_d",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "353. Wine Factory (Easy Version)",
+    "url": "https://codeforces.com/problemset/problem/1919/F1",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "354. Maximum Sum of Subsequence With Non-adjacent Elements",
+    "url": "https://leetcode.com/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/",
+    "difficulty": "New"
+  },
+  {
+    "serial": "",
+    "title": "355. Salary Queries",
+    "url": "https://cses.fi/problemset/task/1144/",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "356. Yaroslav and Divisors",
+    "url": "https://codeforces.com/contest/301/problem/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "357. Xenia and Bit Operations",
+    "url": "https://codeforces.com/problemset/problem/339/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "358. Can you answer these queries III",
+    "url": "https://www.spoj.com/problems/GSS3/",
+    "difficulty": "Hard"
+  },
+  {
+    "serial": "",
+    "title": "359. Distinct Values Queries",
+    "url": "https://cses.fi/problemset/task/1734",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "360. Segment Tree for the Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/4/1/practice/contest/273169/problem/A",
+    "difficulty": "Easy"
+  },
+  {
+    "serial": "",
+    "title": "361. On Changing Tree",
+    "url": "https://codeforces.com/contest/396/problem/C",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "362. Bash and a Tough Math Puzzle",
+    "url": "https://codeforces.com/problemset/problem/914/D",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "363. Increasing subsequence II",
+    "url": "https://cses.fi/problemset/task/1748",
+    "difficulty": "Medium"
+  },
+  {
+    "serial": "",
+    "title": "364. Containers and compartments",
+    "url": "https://eolymp.com/en/problems/7795",
+    "difficulty": "New"
+  }
+]

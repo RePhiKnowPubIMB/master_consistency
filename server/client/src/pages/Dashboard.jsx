@@ -5,8 +5,9 @@ import ConsistencyGraph from '../components/ConsistencyGraph';
 import ContestTracker from '../components/ContestTracker';
 import DayDetailsModal from '../components/DayDetailsModal';
 import BadgeList from '../components/BadgeList';
-import { ExternalLink, Calendar, Clock, Send, CheckCircle, Award } from 'lucide-react';
+import { ExternalLink, Calendar, Clock, Send, CheckCircle, Award, RefreshCw, Video, Trash2, Upload } from 'lucide-react';
 import { formatDate, isToday, getDaysUntil } from '../utils/dateUtils';
+import { saveVideo, getVideo, deleteVideo, toDateKey } from '../utils/videoStorage';
 
 const Dashboard = () => {
     const [dailyLog, setDailyLog] = useState(null);
@@ -23,9 +24,36 @@ const Dashboard = () => {
 
     const [comment, setComment] = useState('');
     const [selectedDay, setSelectedDay] = useState(null);
-    const [quote, setQuote] = useState(null);
-    const [badges, setBadges] = useState([]);
     const [newBadgeAlert, setNewBadgeAlert] = useState(null);
+
+    const [quote, setQuote] = useState({ text: "Consistency is key.", author: "Unknown" });
+    const [badges, setBadges] = useState([]);
+    const [todayVideoUrl, setTodayVideoUrl] = useState(null);
+    const [todayVideoName, setTodayVideoName] = useState("");
+    const [uploadingVideo, setUploadingVideo] = useState(false);
+    const [retryingYouKnowWho, setRetryingYouKnowWho] = useState(false);
+
+    const checkYKWProblemStatus = (problem) => {
+        return problem.status === 'SOLVED';
+    };
+
+    const toggleYKWProblem = async (problemId) => {
+        if (dailyLog.isSubmitted) return;
+        
+        const updatedProblems = dailyLog.youKnowWho.targetProblems.map(p => {
+            if (p.problemId === problemId) {
+                return { ...p, status: p.status === 'SOLVED' ? 'PENDING' : 'SOLVED' };
+            }
+            return p;
+        });
+
+        const isAnySolved = updatedProblems.some(p => p.status === 'SOLVED');
+        
+        await handleUpdate({
+            'youKnowWho.targetProblems': updatedProblems,
+            'youKnowWho.isComplete': isAnySolved
+        });
+    };
 
     const fetchData = async () => {
         try {
@@ -44,11 +72,11 @@ const Dashboard = () => {
             setTomorrowKaggleTasks(tomorrowRes.data.kaggle || []);
             setQuote(quoteRes.data);
             setBadges(badgesRes.data || []);
-            
+
             if (todayRes.data.comment) {
                 setComment(todayRes.data.comment);
             }
-            
+
             setLoading(false);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -60,13 +88,30 @@ const Dashboard = () => {
         fetchData();
     }, []);
 
+    // Load today's video from IndexedDB on mount
+    useEffect(() => {
+        if (dailyLog?.date) {
+            const dateKey = toDateKey(dailyLog.date);
+            getVideo(dateKey).then(videoData => {
+                if (videoData) {
+                    const url = URL.createObjectURL(videoData.blob);
+                    setTodayVideoUrl(url);
+                    setTodayVideoName(videoData.fileName);
+                }
+            }).catch(err => console.error('Error loading video:', err));
+        }
+        return () => {
+            if (todayVideoUrl) URL.revokeObjectURL(todayVideoUrl);
+        };
+    }, [dailyLog?.date]);
+
     const handleSubmitDay = async () => {
         if (!window.confirm("Are you sure you want to submit today's progress? This will finalize your stats for the day.")) return;
-        
+
         try {
             const res = await api.post('/dashboard/submit-day', { comment });
             setDailyLog(res.data.log);
-            
+
             // Check for new badges
             if (res.data.newBadges && res.data.newBadges.length > 0) {
                 setNewBadgeAlert(res.data.newBadges);
@@ -89,6 +134,19 @@ const Dashboard = () => {
         const dayLog = history.find(h => new Date(h.date).toDateString() === new Date(value.date).toDateString());
         if (dayLog) {
             setSelectedDay(dayLog);
+        }
+    };
+
+    const handleRetryYouKnowWho = async () => {
+        setRetryingYouKnowWho(true);
+        try {
+            const res = await api.post('/dashboard/retry-youknowwho');
+            setDailyLog(res.data);
+        } catch (error) {
+            console.error('YouKnowWho retry failed:', error);
+            alert(error.response?.data?.message || 'Failed to fetch YouKnowWho problem. Chrome/Chromium may not be available.');
+        } finally {
+            setRetryingYouKnowWho(false);
         }
     };
 
@@ -127,7 +185,7 @@ const Dashboard = () => {
             // Optimistic update
             const updatedLog = { ...dailyLog };
             updatedLog.prayers[prayerKey] = !updatedLog.prayers[prayerKey];
-            
+
             // Recalculate local count for immediate UI feedback
             const prayerList = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
             let count = 0;
@@ -135,7 +193,7 @@ const Dashboard = () => {
                 if (updatedLog.prayers[p]) count++;
             });
             updatedLog.prayers.count = count;
-            
+
             setDailyLog(updatedLog);
 
             // Server update
@@ -144,7 +202,7 @@ const Dashboard = () => {
         } catch (error) {
             console.error("Error toggling prayer:", error);
             // Revert on error (optional, but good practice)
-            fetchData(); 
+            fetchData();
         }
     };
 
@@ -218,9 +276,9 @@ const Dashboard = () => {
     const handleAcademicGlobalCheck = async () => {
         const isComplete = dailyLog.academic.hoursDone >= 3;
         const newStatus = !isComplete;
-        
+
         const updatedList = dailyLog.academic.todoList.map(t => ({ ...t, isDone: newStatus }));
-        
+
         await handleUpdate({
             'academic.hoursDone': newStatus ? 3 : 0,
             'academic.todoList': updatedList
@@ -239,7 +297,7 @@ const Dashboard = () => {
     const handleWorkoutCheck = (key) => {
         const currentChecklist = dailyLog.workout.checklist || {};
         const newStatus = !currentChecklist[key];
-        
+
         const allKeys = workoutExercises.map(e => e.key);
         const willBeComplete = allKeys.every(k => k === key ? newStatus : currentChecklist[k]);
 
@@ -302,8 +360,8 @@ const Dashboard = () => {
 
     const revisionHeatmapData = mergedHistory.map(log => {
         const solved = log.revision.problems.filter(p => p.status === 'SOLVED').length;
-        const total = log.revision.totalDue || Math.max(solved, 1); 
-        
+        const total = log.revision.totalDue || Math.max(solved, 1);
+
         return {
             date: toHeatmapDate(log.date),
             count: solved,
@@ -333,7 +391,7 @@ const Dashboard = () => {
     const academicHeatmapData = mergedHistory.map(log => {
         const tasks = log.academic?.todoList || [];
         const totalTasks = tasks.length;
-        
+
         if (totalTasks > 0) {
             const completedTasks = tasks.filter(t => t.isDone).length;
             return {
@@ -342,7 +400,7 @@ const Dashboard = () => {
                 max: totalTasks
             };
         }
-        
+
         return {
             date: toHeatmapDate(log.date),
             count: log.academic.hoursDone,
@@ -353,7 +411,7 @@ const Dashboard = () => {
     const kaggleHeatmapData = mergedHistory.map(log => {
         const tasks = log.kaggle?.todoList || [];
         const totalTasks = tasks.length;
-        
+
         if (totalTasks > 0) {
             const completedTasks = tasks.filter(t => t.isDone).length;
             return {
@@ -370,11 +428,14 @@ const Dashboard = () => {
         };
     });
 
-    const youKnowWhoHeatmapData = mergedHistory.map(log => ({
-        date: toHeatmapDate(log.date),
-        count: log.youKnowWho?.status === 'SOLVED' ? 1 : 0,
-        max: 1
-    }));
+    const youKnowWhoHeatmapData = mergedHistory.map(log => {
+        const solved = log.youKnowWho?.targetProblems?.filter(p => p.status === 'SOLVED').length || 0;
+        return {
+            date: toHeatmapDate(log.date),
+            count: solved >= 1 ? 1 : 0,
+            max: 1
+        };
+    });
 
     return (
         <div className="min-h-screen bg-slate-900 text-slate-100 p-6 max-w-4xl mx-auto">
@@ -412,9 +473,9 @@ const Dashboard = () => {
             <section className="mb-12">
                 <h2 className="text-xl font-semibold mb-4 text-slate-300">Master Consistency</h2>
                 <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-8">
-                    <EfficiencyHeatmap 
-                        data={masterHeatmapData} 
-                        colorClass="text-green-500" 
+                    <EfficiencyHeatmap
+                        data={masterHeatmapData}
+                        colorClass="text-green-500"
                         onClick={handleDayClick}
                         variant="mixed-yellow-green"
                         maxValue={100}
@@ -443,7 +504,7 @@ const Dashboard = () => {
 
             {/* The List */}
             <div className="space-y-8">
-                
+
                 {/* 1. Prayer */}
                 <section className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
                     <div className="flex justify-between items-start mb-4">
@@ -460,7 +521,7 @@ const Dashboard = () => {
                                 const prayerKey = prayer.toLowerCase();
                                 return (
                                     <label key={prayer} className={`flex items-center gap-3 p-3 bg-slate-800 rounded-lg transition-colors ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-700'}`}>
-                                        <input 
+                                        <input
                                             type="checkbox"
                                             checked={dailyLog.prayers[prayerKey]}
                                             onChange={() => handlePrayerToggle(prayerKey)}
@@ -491,7 +552,7 @@ const Dashboard = () => {
                             <div className="grid grid-cols-2 gap-3">
                                 {workoutExercises.map((ex) => (
                                     <label key={ex.key} className={`flex items-center gap-2 p-2 bg-slate-800 rounded transition-colors ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-700'}`}>
-                                        <input 
+                                        <input
                                             type="checkbox"
                                             checked={dailyLog.workout.checklist?.[ex.key] || false}
                                             onChange={() => handleWorkoutCheck(ex.key)}
@@ -503,7 +564,7 @@ const Dashboard = () => {
                                 ))}
                             </div>
                             <label className={`flex items-center gap-4 p-4 bg-slate-800 rounded-xl transition-colors w-full justify-center border border-slate-600 mt-2 ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-700'}`}>
-                                <input 
+                                <input
                                     type="checkbox"
                                     checked={dailyLog.workout.isCompleted}
                                     onChange={handleGlobalWorkoutCheck}
@@ -522,13 +583,13 @@ const Dashboard = () => {
                 {/* 3. Coding Phase */}
                 <section className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
                     <h2 className="text-2xl font-bold text-green-400 mb-6">3. Coding Phase</h2>
-                    
+
                     {/* Codeforces */}
                     <div className="mb-8">
                         <div className="flex justify-between items-center mb-2">
                             <h3 className="text-lg font-semibold text-slate-300">Codeforces</h3>
-                            <button 
-                                onClick={handleRefreshStatus} 
+                            <button
+                                onClick={handleRefreshStatus}
                                 disabled={dailyLog.isSubmitted}
                                 className={`text-sm ${dailyLog.isSubmitted ? 'text-slate-500 cursor-not-allowed' : 'text-green-400 hover:text-green-300'}`}
                             >
@@ -540,22 +601,131 @@ const Dashboard = () => {
                                 <div className="text-sm text-slate-400 mb-2">Problems Solved Today</div>
                                 <div className="text-3xl font-bold text-green-400">{dailyLog.codeforces.solvedCount}</div>
                                 <div className="mt-4 space-y-3">
-                                    {dailyLog.codeforces.targetProblems.map((p, i) => (
-                                        <a 
-                                            key={i} 
-                                            href={p.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className={`block text-sm font-medium truncate hover:underline transition-colors ${
-                                                p.status === 'SOLVED' ? 'text-green-400' : 'text-slate-300 hover:text-green-300'
-                                            }`}
-                                        >
-                                            {i + 1}. {p.name}
-                                        </a>
-                                    ))}
+                                    <EfficiencyHeatmap data={codeforcesHeatmapData} colorClass="text-green-500" maxValue={6} variant="mixed-yellow-green" />
                                 </div>
                             </div>
-                            <EfficiencyHeatmap data={codeforcesHeatmapData} colorClass="text-green-500" maxValue={6} variant="mixed-yellow-green" />
+                        </div>
+
+                        {/* YouKnowWho Academy Section */}
+                        <div className="mt-8 mb-8 p-6 bg-emerald-900/20 rounded-2xl border-2 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)] relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+                            <div className="flex justify-between items-center mb-6 relative z-10">
+                                <h3 className="text-2xl font-black text-emerald-400 flex items-center gap-3 tracking-tight">
+                                    <div className="bg-emerald-500/20 p-2 rounded-lg border border-emerald-500/30">
+                                        <Award size={24} className="text-emerald-400" />
+                                    </div>
+                                    YOUKNOWWHO ACADEMY
+                                </h3>
+                                <div className="flex flex-col items-end gap-1">
+                                    <span className="text-[10px] font-black bg-emerald-500 text-slate-900 px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-emerald-500/20">
+                                        Elite Path
+                                    </span>
+                                    <span className="text-[9px] text-emerald-500/70 font-bold uppercase tracking-tighter">
+                                        1 Solved = ✨ Full Day Score
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-6 relative z-10">
+                                <div className="bg-slate-900/60 backdrop-blur-md rounded-xl border border-emerald-500/20 overflow-hidden shadow-2xl">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm text-left">
+                                            <thead className="text-[10px] text-emerald-400 uppercase bg-emerald-500/10 border-b border-emerald-500/20">
+                                                <tr>
+                                                    <th className="px-6 py-4 font-black tracking-widest">Target Problem</th>
+                                                    <th className="px-6 py-4 font-black tracking-widest">Library / Topic</th>
+                                                    <th className="px-6 py-4 font-black tracking-widest text-center w-28">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-800/50">
+                                                {dailyLog?.youKnowWho?.targetProblems?.map((problem, index) => (
+                                                    <tr key={problem.problemId || index} className="hover:bg-emerald-500/5 transition-all duration-300 group">
+                                                        <td className="px-6 py-5">
+                                                            <div className="flex flex-col gap-2">
+                                                                <a
+                                                                    href={problem.link}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className={`group/link font-bold flex items-start gap-2 transition-all ${problem.status === 'SOLVED' 
+                                                                        ? 'text-emerald-500/40 line-through italic' 
+                                                                        : 'text-slate-100 hover:text-emerald-400'
+                                                                    }`}
+                                                                >
+                                                                    <ExternalLink size={16} className={`mt-0.5 shrink-0 transition-transform group-hover/link:scale-110 ${problem.status === 'SOLVED' ? 'opacity-20' : 'text-emerald-500'}`} />
+                                                                    <span className="text-base leading-tight">{problem.name}</span>
+                                                                </a>
+                                                                <div className="flex items-center gap-2">
+                                                                    {index === 0 ? (
+                                                                        <span className="flex items-center gap-1.5 text-[10px] bg-emerald-500 text-slate-900 px-2.5 py-1 rounded font-black uppercase tracking-wider">
+                                                                            <Star size={10} fill="currentColor" />
+                                                                            Daily Prime
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-bold uppercase tracking-wide border border-slate-700">
+                                                                            Backup
+                                                                        </span>
+                                                                    )}
+                                                                    {problem.difficulty && (
+                                                                        <span className={`text-[10px] px-2 py-0.5 rounded font-black border uppercase tracking-tighter ${
+                                                                            problem.difficulty.toLowerCase().includes('hard') ? 'bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]' :
+                                                                            problem.difficulty.toLowerCase().includes('medium') ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                                                            'bg-blue-500/10 text-cyan-400 border-cyan-500/20'
+                                                                        }`}>
+                                                                            {problem.difficulty}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-5">
+                                                            <div className="flex flex-col gap-1">
+                                                                <span className="text-emerald-400/80 font-black text-[10px] uppercase tracking-widest">
+                                                                    Topic Focus
+                                                                </span>
+                                                                <span className="text-slate-300 font-medium text-sm">
+                                                                    {problem.topic}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-5 text-center">
+                                                            <button
+                                                                onClick={() => toggleYKWProblem(problem.problemId)}
+                                                                disabled={dailyLog.isSubmitted}
+                                                                className={`w-12 h-12 rounded-xl border-2 transition-all duration-500 flex items-center justify-center relative overflow-hidden group/btn ${problem.status === 'SOLVED'
+                                                                        ? 'bg-emerald-500 border-emerald-400 text-slate-900 shadow-[0_0_20px_rgba(16,185,129,0.4)]'
+                                                                        : 'bg-slate-800 border-slate-700 text-emerald-500/30 hover:border-emerald-500 hover:text-emerald-500 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+                                                                    } ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'active:scale-90'}`}
+                                                            >
+                                                                <CheckCircle size={28} className={`transition-all duration-500 ${problem.status === 'SOLVED' ? 'scale-110 rotate-0' : 'scale-50 opacity-0 -rotate-12 group-hover/btn:scale-100 group-hover/btn:opacity-100'}`} />
+                                                                {problem.status !== 'SOLVED' && <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>}
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                                {(!dailyLog?.youKnowWho?.targetProblems || dailyLog.youKnowWho.targetProblems.length === 0) && (
+                                                    <tr>
+                                                        <td colSpan="3" className="px-4 py-20 text-center bg-slate-900/40">
+                                                            <div className="flex flex-col items-center gap-4">
+                                                                <div className="relative">
+                                                                    <RefreshCw size={48} className="animate-spin text-emerald-500/20" />
+                                                                    <Award size={24} className="absolute inset-0 m-auto text-emerald-500 animate-pulse" />
+                                                                </div>
+                                                                <p className="text-emerald-500/50 font-black uppercase tracking-[0.2em] text-xs">Curating Challenges...</p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div className="bg-slate-900/40 p-5 rounded-xl border border-emerald-500/10 shadow-inner">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="w-1 h-4 bg-emerald-500 rounded-full"></div>
+                                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Academy Progression </span>
+                                    </div>
+                                    <EfficiencyHeatmap data={youKnowWhoHeatmapData || []} colorClass="text-emerald-500" title="YKW Academy Streak Tracker" />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -566,20 +736,19 @@ const Dashboard = () => {
                             <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
                                 {dailyLog.leetcode.link ? (
                                     <div className="flex items-center gap-3">
-                                        <input 
+                                        <input
                                             type="checkbox"
                                             checked={dailyLog.leetcode.status === 'SOLVED'}
                                             onChange={(e) => handleUpdate({ 'leetcode.status': e.target.checked ? 'SOLVED' : 'PENDING' })}
                                             disabled={dailyLog.isSubmitted}
                                             className="w-5 h-5 rounded border-slate-600 text-yellow-500 focus:ring-yellow-500 bg-slate-700 disabled:opacity-50"
                                         />
-                                        <a 
-                                            href={dailyLog.leetcode.link} 
-                                            target="_blank" 
+                                        <a
+                                            href={dailyLog.leetcode.link}
+                                            target="_blank"
                                             rel="noopener noreferrer"
-                                            className={`text-sm font-medium flex items-center gap-2 hover:underline ${
-                                                dailyLog.leetcode.status === 'SOLVED' ? 'text-yellow-400 line-through' : 'text-yellow-400'
-                                            }`}
+                                            className={`text-sm font-medium flex items-center gap-2 hover:underline ${dailyLog.leetcode.status === 'SOLVED' ? 'text-yellow-400 line-through' : 'text-yellow-400'
+                                                }`}
                                         >
                                             <ExternalLink size={16} />
                                             Daily Challenge
@@ -602,8 +771,8 @@ const Dashboard = () => {
                             {/* Controls */}
                             <div className="flex flex-col gap-4 bg-slate-800 p-4 rounded-lg">
                                 <div className="flex gap-2">
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={newReviseProblem}
                                         onChange={(e) => setNewReviseProblem(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddReviseProblem()}
@@ -611,8 +780,8 @@ const Dashboard = () => {
                                         disabled={dailyLog.isSubmitted}
                                         className="flex-1 bg-slate-700 border border-slate-600 rounded p-2 text-sm text-slate-200 disabled:opacity-50"
                                     />
-                                    <button 
-                                        onClick={handleAddReviseProblem} 
+                                    <button
+                                        onClick={handleAddReviseProblem}
                                         disabled={dailyLog.isSubmitted}
                                         className="bg-pink-600 hover:bg-pink-500 px-4 rounded text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
@@ -621,8 +790,8 @@ const Dashboard = () => {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-400 text-sm">{reviseQueue.length} problems in queue</span>
-                                    <button 
-                                        onClick={handlePopReviseProblem} 
+                                    <button
+                                        onClick={handlePopReviseProblem}
                                         disabled={reviseQueue.length === 0 || dailyLog.isSubmitted}
                                         className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 px-4 py-2 rounded text-white text-sm disabled:cursor-not-allowed"
                                     >
@@ -648,13 +817,12 @@ const Dashboard = () => {
                                                 {reviseQueue.map((problem, index) => {
                                                     const reviseToday = isToday(problem.reviseDate);
                                                     const daysUntil = getDaysUntil(problem.reviseDate);
-                                                    
+
                                                     return (
-                                                        <tr 
-                                                            key={problem._id} 
-                                                            className={`border-b border-slate-700 hover:bg-slate-700/50 transition-colors ${
-                                                                reviseToday ? 'bg-yellow-900/10' : ''
-                                                            }`}
+                                                        <tr
+                                                            key={problem._id}
+                                                            className={`border-b border-slate-700 hover:bg-slate-700/50 transition-colors ${reviseToday ? 'bg-yellow-900/10' : ''
+                                                                }`}
                                                         >
                                                             <td className="px-4 py-3">
                                                                 <a
@@ -664,8 +832,8 @@ const Dashboard = () => {
                                                                     className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-2 hover:underline"
                                                                 >
                                                                     <ExternalLink size={14} />
-                                                                    {problem.problemLink.length > 40 
-                                                                        ? problem.problemLink.substring(0, 40) + '...' 
+                                                                    {problem.problemLink.length > 40
+                                                                        ? problem.problemLink.substring(0, 40) + '...'
                                                                         : problem.problemLink}
                                                                 </a>
                                                                 {index === 0 && (
@@ -724,7 +892,7 @@ const Dashboard = () => {
                         <div className="flex items-center gap-4">
                             <span className="text-slate-400 font-semibold">Target: 3 Hours</span>
                             <label className={`flex items-center gap-2 transition-colors ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                                <input 
+                                <input
                                     type="checkbox"
                                     checked={dailyLog.academic.hoursDone >= 3}
                                     onChange={handleAcademicGlobalCheck}
@@ -743,7 +911,7 @@ const Dashboard = () => {
                                 {dailyLog.academic.todoList.length > 0 ? (
                                     dailyLog.academic.todoList.map((item, idx) => (
                                         <div key={idx} className="flex items-center gap-2 group bg-slate-800 p-3 rounded-lg border border-slate-700">
-                                            <input 
+                                            <input
                                                 type="checkbox"
                                                 checked={item.isDone}
                                                 onChange={() => toggleAcademicTask(idx)}
@@ -763,8 +931,8 @@ const Dashboard = () => {
                         <div>
                             <h3 className="text-sm font-semibold text-slate-400 mb-2 uppercase tracking-wider">Plan for Tomorrow</h3>
                             <div className="flex gap-2 mb-3">
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={newTomorrowAcademicTask}
                                     onChange={(e) => setNewTomorrowAcademicTask(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleAddTomorrowTask('academic')}
@@ -772,8 +940,8 @@ const Dashboard = () => {
                                     disabled={dailyLog.isSubmitted}
                                     className="flex-1 bg-slate-800 border border-slate-600 rounded p-2 text-sm text-slate-200 placeholder-slate-500 disabled:opacity-50"
                                 />
-                                <button 
-                                    onClick={() => handleAddTomorrowTask('academic')} 
+                                <button
+                                    onClick={() => handleAddTomorrowTask('academic')}
                                     disabled={dailyLog.isSubmitted}
                                     className="bg-orange-600 hover:bg-orange-500 px-4 rounded text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
@@ -803,7 +971,7 @@ const Dashboard = () => {
                         <div className="flex items-center gap-4">
                             <span className="text-slate-400 font-semibold">Target: 1 Hour</span>
                             <label className={`flex items-center gap-2 transition-colors ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                                <input 
+                                <input
                                     type="checkbox"
                                     checked={dailyLog.kaggle.minutesDone >= 60}
                                     onChange={(e) => {
@@ -829,7 +997,7 @@ const Dashboard = () => {
                                 {dailyLog.kaggle.todoList && dailyLog.kaggle.todoList.length > 0 ? (
                                     dailyLog.kaggle.todoList.map((item, idx) => (
                                         <div key={idx} className="flex items-center gap-2 group bg-slate-800 p-3 rounded-lg border border-slate-700">
-                                            <input 
+                                            <input
                                                 type="checkbox"
                                                 checked={item.isDone}
                                                 onChange={() => {
@@ -853,8 +1021,8 @@ const Dashboard = () => {
                         <div>
                             <h3 className="text-sm font-semibold text-slate-400 mb-2 uppercase tracking-wider">Plan for Tomorrow</h3>
                             <div className="flex gap-2 mb-3">
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={newTomorrowKaggleTask}
                                     onChange={(e) => setNewTomorrowKaggleTask(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleAddTomorrowTask('kaggle')}
@@ -862,8 +1030,8 @@ const Dashboard = () => {
                                     disabled={dailyLog.isSubmitted}
                                     className="flex-1 bg-slate-800 border border-slate-600 rounded p-2 text-sm text-slate-200 placeholder-slate-500 disabled:opacity-50"
                                 />
-                                <button 
-                                    onClick={() => handleAddTomorrowTask('kaggle')} 
+                                <button
+                                    onClick={() => handleAddTomorrowTask('kaggle')}
                                     disabled={dailyLog.isSubmitted}
                                     className="bg-cyan-600 hover:bg-cyan-500 px-4 rounded text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
@@ -892,94 +1060,6 @@ const Dashboard = () => {
                     </div>
                 </section>
 
-                {/* 7. YouKnowWho Academy */}
-                {dailyLog.youKnowWho && (
-                    <section className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
-                        <div className="flex justify-between items-start mb-4">
-                            <h2 className="text-2xl font-bold text-purple-400">7. YouKnowWho Academy</h2>
-                            <div className="text-right">
-                                <div className="text-sm text-slate-400">Daily Topic</div>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-6">
-                            {/* Today's Problem */}
-                            {dailyLog.youKnowWho.link ? (
-                                <div className="bg-slate-800 p-5 rounded-lg border border-slate-700">
-                                    <div className="mb-4">
-                                        <div className="flex items-start justify-between gap-4 mb-3">
-                                            <div className="flex-1">
-                                                <a 
-                                                    href={dailyLog.youKnowWho.link} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    className="text-purple-400 hover:text-purple-300 font-bold text-lg flex items-center gap-2 hover:underline break-words"
-                                                >
-                                                    <ExternalLink size={18} />
-                                                    {dailyLog.youKnowWho.name || 'YouKnowWho Problem'}
-                                                </a>
-                                            </div>
-                                            <label className={`flex items-center gap-2 whitespace-nowrap ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                                                <input 
-                                                    type="checkbox"
-                                                    checked={dailyLog.youKnowWho.status === 'SOLVED'}
-                                                    onChange={(e) => handleUpdate({ 'youKnowWho.status': e.target.checked ? 'SOLVED' : 'PENDING' })}
-                                                    disabled={dailyLog.isSubmitted}
-                                                    className="w-5 h-5 rounded border-slate-600 text-purple-500 focus:ring-purple-500 bg-slate-700 disabled:opacity-50"
-                                                />
-                                                <span className={`text-sm font-semibold ${dailyLog.youKnowWho.status === 'SOLVED' ? 'text-purple-400' : 'text-slate-300'}`}>
-                                                    {dailyLog.youKnowWho.status === 'SOLVED' ? 'Solved' : 'Pending'}
-                                                </span>
-                                            </label>
-                                        </div>
-                                        
-                                        {/* Problem Details */}
-                                        <div className="flex flex-wrap gap-3 mt-4">
-                                            {dailyLog.youKnowWho.difficulty && (
-                                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
-                                                    dailyLog.youKnowWho.difficulty === 'Easy' || dailyLog.youKnowWho.difficulty === 'EASY' ? 'bg-green-900/30 text-green-400 border-green-700/50' :
-                                                    dailyLog.youKnowWho.difficulty === 'Medium' || dailyLog.youKnowWho.difficulty === 'MEDIUM' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700/50' :
-                                                    'bg-red-900/30 text-red-400 border-red-700/50'
-                                                }`}>
-                                                    {dailyLog.youKnowWho.difficulty}
-                                                </span>
-                                            )}
-                                            {dailyLog.youKnowWho.importance && (
-                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-900/30 text-purple-400 border border-purple-700/50">
-                                                    ⭐ {dailyLog.youKnowWho.importance}
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* Topic/Tags */}
-                                        {dailyLog.youKnowWho.topic && (
-                                            <div className="mt-4 pt-4 border-t border-slate-700">
-                                                <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">Topics</div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {dailyLog.youKnowWho.topic.split(',').map((tag, idx) => (
-                                                        <span key={idx} className="inline-block bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs">
-                                                            {tag.trim()}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="bg-slate-800 p-6 rounded-lg border border-slate-700 text-center text-slate-400">
-                                    <p className="text-sm italic">Fetching daily YouKnowWho problem...</p>
-                                    <p className="text-xs mt-2 text-slate-500">(Requires Chrome/Chromium for scraping)</p>
-                                </div>
-                            )}
-
-                        {/* Heatmap */}
-                        <div>
-                            <EfficiencyHeatmap data={youKnowWhoHeatmapData} colorClass="text-purple-500" variant="mixed-yellow-green" />
-                        </div>
-                    </div>
-                    </section>
-                )}
-
                 {/* Day Reflection & Submission */}
                 <section className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 mt-8">
                     <h2 className="text-2xl font-bold text-white mb-6">Day Reflection</h2>
@@ -991,6 +1071,78 @@ const Dashboard = () => {
                             className="w-full bg-slate-800 border border-slate-600 rounded-lg p-4 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-transparent h-32 resize-none"
                             disabled={dailyLog.isSubmitted}
                         />
+
+                        {/* Video Upload Section */}
+                        <div className="bg-slate-800 border border-slate-600 rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Video size={18} className="text-indigo-400" />
+                                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Daily Video</h3>
+                                <span className="text-xs text-slate-500 ml-auto">(Stored locally in browser)</span>
+                            </div>
+
+                            {todayVideoUrl ? (
+                                <div className="space-y-3">
+                                    <video
+                                        src={todayVideoUrl}
+                                        controls
+                                        className="w-full max-h-64 rounded-lg bg-black"
+                                    />
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-slate-400 truncate max-w-[200px]">{todayVideoName}</span>
+                                        {!dailyLog.isSubmitted && (
+                                            <button
+                                                onClick={async () => {
+                                                    const dateKey = toDateKey(dailyLog.date);
+                                                    await deleteVideo(dateKey);
+                                                    URL.revokeObjectURL(todayVideoUrl);
+                                                    setTodayVideoUrl(null);
+                                                    setTodayVideoName('');
+                                                }}
+                                                className="flex items-center gap-1 text-red-400 hover:text-red-300 text-xs transition-colors"
+                                            >
+                                                <Trash2 size={12} />
+                                                Remove
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <label className={`flex flex-col items-center justify-center border-2 border-dashed border-slate-600 rounded-lg p-6 transition-colors ${dailyLog.isSubmitted ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-indigo-500 hover:bg-slate-700/30'
+                                    }`}>
+                                    <Upload size={24} className="text-slate-500 mb-2" />
+                                    <span className="text-sm text-slate-400">
+                                        {uploadingVideo ? 'Saving...' : 'Click to upload today\'s video'}
+                                    </span>
+                                    <span className="text-xs text-slate-500 mt-1">MP4, WebM, MOV supported</span>
+                                    <input
+                                        type="file"
+                                        accept="video/*"
+                                        className="hidden"
+                                        disabled={dailyLog.isSubmitted || uploadingVideo}
+                                        onChange={async (e) => {
+                                            const file = e.target.files[0];
+                                            if (!file) return;
+                                            setUploadingVideo(true);
+                                            try {
+                                                const dateKey = toDateKey(dailyLog.date);
+                                                await saveVideo(dateKey, file, file.name, file.type);
+                                                const url = URL.createObjectURL(file);
+                                                if (todayVideoUrl) URL.revokeObjectURL(todayVideoUrl);
+                                                setTodayVideoUrl(url);
+                                                setTodayVideoName(file.name);
+                                            } catch (err) {
+                                                console.error('Error saving video:', err);
+                                                alert('Failed to save video locally.');
+                                            } finally {
+                                                setUploadingVideo(false);
+                                                e.target.value = '';
+                                            }
+                                        }}
+                                    />
+                                </label>
+                            )}
+                        </div>
+
                         <div className="flex justify-end">
                             {dailyLog.isSubmitted ? (
                                 <div className="flex items-center gap-2 text-emerald-400 bg-emerald-500/10 px-4 py-2 rounded-lg border border-emerald-500/20">
@@ -998,7 +1150,7 @@ const Dashboard = () => {
                                     <span className="font-medium">Day Submitted</span>
                                 </div>
                             ) : (
-                                <button 
+                                <button
                                     onClick={handleSubmitDay}
                                     className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-lg font-bold transition-colors"
                                 >
@@ -1012,9 +1164,9 @@ const Dashboard = () => {
 
             </div>
 
-            <DayDetailsModal 
-                day={selectedDay} 
-                onClose={() => setSelectedDay(null)} 
+            <DayDetailsModal
+                day={selectedDay}
+                onClose={() => setSelectedDay(null)}
             />
 
             {/* New Badge Alert Modal */}
@@ -1025,7 +1177,7 @@ const Dashboard = () => {
                         <Award size={64} className="text-yellow-400 mx-auto mb-4 animate-bounce" />
                         <h2 className="text-3xl font-bold text-white mb-2">Badge Unlocked!</h2>
                         <p className="text-slate-300 mb-6">You've earned new achievements for your consistency.</p>
-                        
+
                         <div className="space-y-4 mb-8">
                             {newBadgeAlert.map((badge, idx) => (
                                 <div key={idx} className="bg-slate-900/50 p-4 rounded-lg border border-yellow-400/20">
@@ -1035,7 +1187,7 @@ const Dashboard = () => {
                             ))}
                         </div>
 
-                        <button 
+                        <button
                             onClick={() => setNewBadgeAlert(null)}
                             className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 px-8 rounded-full transition-colors w-full"
                         >

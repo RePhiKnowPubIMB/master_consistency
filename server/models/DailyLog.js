@@ -84,12 +84,17 @@ const dailyLogSchema = new mongoose.Schema({
   },
 
   youKnowWho: {
-    link: String,
-    name: String,
-    difficulty: String,
-    importance: Number,
-    topic: String,
-    status: { type: String, enum: ['PENDING', 'SOLVED'], default: 'PENDING' }
+    targetProblems: [
+      {
+        problemId: String,
+        name: String,
+        link: String,
+        topic: String,
+        difficulty: String,
+        status: { type: String, enum: ['PENDING', 'SOLVED'], default: 'PENDING' }
+      }
+    ],
+    isComplete: { type: Boolean, default: false }
   }
 });
 

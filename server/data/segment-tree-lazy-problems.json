@@ -1,0 +1,268 @@
+[
+  {
+    "serial": "",
+    "title": "1. Addition and Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/D",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "2. Addition and Minimum",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/A",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "4. Circular RMQ",
+    "url": "https://codeforces.com/problemset/problem/52/C",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "5. Multiplication and Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/B",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "6. Assignment and Sum",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/F",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "8. The Child and Sequence",
+    "url": "https://codeforces.com/contest/438/problem/D",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "9. Two Sequence Queries",
+    "url": "https://atcoder.jp/contests/abc357/tasks/abc357_f",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "10. Range Update Point Query",
+    "url": "https://codeforces.com/contest/1791/problem/F",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "11. Add Arithmetic Progression On Segment",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/4/practice/contest/280801/problem/B",
+    "difficulty": "Easy",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "12. Reactor",
+    "url": "https://codeforces.com/gym/106084/problem/I",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "15. Bitwise OR and AND",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/2/practice/contest/279653/problem/C",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "16.  Inverse and K-th one",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/3/practice/contest/280799/problem/B",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "17. Addition and First element at least X",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/3/practice/contest/280799/problem/C",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "18. Assignment and Maximal Segment",
+    "url": "https://codeforces.com/edu/course/2/lesson/5/3/practice/contest/280799/problem/A",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "19. Kefa and Watch",
+    "url": "https://codeforces.com/problemset/problem/580/E",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "20. A Simple Task",
+    "url": "https://codeforces.com/problemset/problem/558/E",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "21. XOR on Segment",
+    "url": "https://codeforces.com/problemset/problem/242/E",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "23. Lucky Queries",
+    "url": "https://codeforces.com/contest/145/problem/E",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "24. Boring Segments",
+    "url": "https://codeforces.com/contest/1555/problem/E",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "25. Random Update Query",
+    "url": "https://atcoder.jp/contests/abc332/tasks/abc332_f",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "26. MEX Queries",
+    "url": "https://codeforces.com/problemset/problem/817/F",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "27. Serge and Dining Room",
+    "url": "https://codeforces.com/contest/1179/problem/C",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "28. Diverging Directions",
+    "url": "https://codeforces.com/contest/838/problem/B",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "29. Water Tree",
+    "url": "https://codeforces.com/problemset/problem/343/D",
+    "difficulty": "Medium",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "30. Happy Life in University",
+    "url": "https://codeforces.com/contest/1916/problem/E",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "31. Marble Jars",
+    "url": "https://codeforces.com/group/Rilx5irOux/contest/548472/problem/K",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "32. Space Harbour",
+    "url": "https://codeforces.com/contest/1924/problem/B",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "33. Drazil and Park",
+    "url": "https://codeforces.com/contest/516/problem/C",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "34.  DZY Loves Fibonacci Numbers",
+    "url": "https://codeforces.com/contest/446/problem/C",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "35. Please, another Queries on Array?",
+    "url": "https://codeforces.com/problemset/problem/1114/F",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "36. Linear Kingdom Races",
+    "url": "https://codeforces.com/contest/115/problem/E",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "37. Queries",
+    "url": "https://codeforces.com/gym/100739/problem/A",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "38. Greedy Subsequences",
+    "url": "https://codeforces.com/contest/1132/problem/G",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "39. Addition Robot",
+    "url": "https://codeforces.com/problemset/problem/1252/K",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "40. Wine Factory (Easy Version)",
+    "url": "https://codeforces.com/problemset/problem/1919/F1",
+    "difficulty": "Hard",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "41. Mon and the Magical Array",
+    "url": "https://codeforces.com/group/Rilx5irOux/contest/634004/problem/E",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "42. Remove at the lowest cost",
+    "url": "https://codeforces.com/contest/2176/problem/E",
+    "difficulty": "New",
+    "tags": []
+  },
+  {
+    "serial": "",
+    "title": "43. Al Fine (Maximizing Version)",
+    "url": "https://codeforces.com/contest/2187/problem/F1",
+    "difficulty": "New",
+    "tags": []
+  }
+]

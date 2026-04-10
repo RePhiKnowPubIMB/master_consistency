@@ -3,10 +3,139 @@ const router = express.Router();
 const DailyLog = require('../models/DailyLog');
 const UserConfig = require('../models/UserConfig');
 const ReviseProblem = require('../models/ReviseProblem');
+const YKWProblem = require('../models/YKWProblem');
 const axios = require('axios');
 const { generateDailyLog } = require('../services/cronService');
 const { getDailyQuote } = require('../services/quoteService');
 const { getContestData } = require('../services/codeforcesService');
+
+// Helper to fetch YKW Problems
+const fetchDailyYKWProblems = async (log) => {
+    try {
+        let userConfig = await UserConfig.findOne({});
+        if (!userConfig) {
+            userConfig = await UserConfig.create({
+                ykw: {
+                    currentTopic: "Introduction",
+                    topicProblemCount: 0
+                }
+            });
+        }
+
+        let currentTopic = userConfig.ykw?.currentTopic || "Introduction";
+        const currentCount = userConfig.ykw?.topicProblemCount || 0;
+
+        // Get unsolved problems for the current topic
+        let unsolved = await YKWProblem.find({ 
+            topicName: currentTopic,
+            solved: false 
+        }).sort({ dailyIndex: 1 }).limit(4);
+
+        // If no problems found for current topic, try next topic automatically
+        if (unsolved.length === 0) {
+            const allTopics = await YKWProblem.distinct('topicName');
+            const currentIndex = allTopics.indexOf(currentTopic);
+
+            for (let i = 1; i <= allTopics.length; i++) {
+                const checkIndex = (currentIndex + i) % allTopics.length;
+                const nextTopicCandidate = allTopics[checkIndex];
+                
+                const count = await YKWProblem.countDocuments({ topicName: nextTopicCandidate, solved: false });
+                if (count > 0) {
+                    userConfig.ykw.currentTopic = nextTopicCandidate;
+                    userConfig.ykw.topicProblemCount = 0;
+                    await userConfig.save();
+                    currentTopic = nextTopicCandidate;
+                    
+                    unsolved = await YKWProblem.find({ 
+                        topicName: currentTopic,
+                        solved: false 
+                    }).sort({ dailyIndex: 1 }).limit(4);
+                    break;
+                }
+            }
+        }
+
+        if (unsolved.length > 0) {
+            log.youKnowWho.targetProblems = unsolved.map(p => ({
+                problemId: p._id.toString(),
+                name: p.title,
+                link: p.url,
+                topic: p.topicName,
+                difficulty: p.difficulty,
+                status: 'PENDING'
+            }));
+            return log.youKnowWho.targetProblems;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.error("YKW Fetch Error:", error);
+        return [];
+    }
+}
+
+async function checkYKWStatus(log) {
+    try {
+        const userConfig = await UserConfig.findOne();
+        if (!userConfig) return;
+
+        const handle = userConfig.username;
+        // Since YKW doesn't have a public API like CF for status, 
+        // we'll assume the user marks them as solved or we check CF/VJudge if we had IDs.
+        // For now, the prompt implies "same like the cf above" logic.
+        // Codeforces logic uses the API. For YKW (CSES, SPOJ, CF, Kattis), we'd need a multi-platform scraper.
+        // To satisfy "same like the cf", we'll check if any of these links appear in CF submissions 
+        // if they are CF links.
+        
+        const cfRes = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}&from=1&count=50`, {
+            timeout: 5000
+        }).catch(() => null);
+
+        let updated = false;
+        const logDateStart = new Date(log.date).getTime();
+
+        for (const problem of log.youKnowWho.targetProblems) {
+            if (problem.status === 'PENDING') {
+                // If it's a CF link, check CF API
+                if (problem.link.includes('codeforces.com') && cfRes && cfRes.data.status === 'OK') {
+                    const parts = problem.link.split('/');
+                    const pIndex = parts[parts.length - 1];
+                    const cId = parts[parts.length - 3];
+                    
+                    const solved = cfRes.data.result.find(s => 
+                        s.problem.contestId == cId && 
+                        s.problem.index == pIndex && 
+                        s.verdict === 'OK' &&
+                        s.creationTimeSeconds * 1000 >= logDateStart
+                    );
+
+                    if (solved) {
+                        problem.status = 'SOLVED';
+                        updated = true;
+                        
+                        // Mark in master YKW collection
+                        await YKWProblem.findByIdAndUpdate(problem.problemId, { 
+                            solved: true, 
+                            solveDate: new Date() 
+                        });
+                        
+                        // Increment topic count for user
+                        userConfig.ykw.topicProblemCount++;
+                        await userConfig.save();
+                    }
+                }
+            }
+        }
+
+        if (updated) {
+            await calculateScore(log);
+            await log.save();
+        }
+    } catch (error) {
+        console.error("YKW Status Check Error:", error.message);
+    }
+}
 
 // Helper to fetch LeetCode
 async function fetchLeetCodeLink() {
@@ -50,84 +179,93 @@ async function fetchDailyCodeforcesProblems(log) {
         const handle = userConfig.username || 'RePhiKnowPubIMB';
         let currentRating = userConfig.codeforces?.currentRating || 1700;
 
-        // 1. Fetch User Submissions
-        const subRes = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}`);
-        if (subRes.data.status !== 'OK') return;
+        try {
+            // 1. Fetch User Submissions (with timeout)
+            const subRes = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}`, {
+                timeout: 8000
+            });
+            if (subRes.data.status !== 'OK') return;
 
-        const submissions = subRes.data.result;
-        const solvedSet = new Set();
-        
-        submissions.forEach(s => {
-            if (s.verdict === 'OK') {
-                solvedSet.add(`${s.problem.contestId}${s.problem.index}`);
-            }
-        });
-
-        // 2. Determine Rating (Check if we need to level up)
-        let solvedCount = 0;
-        const countSolvedForRating = (rating) => {
-            const distinctSolved = new Set();
+            const submissions = subRes.data.result;
+            const solvedSet = new Set();
+            
             submissions.forEach(s => {
-                if (s.verdict === 'OK' && s.problem.rating === rating) {
-                    distinctSolved.add(`${s.problem.contestId}${s.problem.index}`);
+                if (s.verdict === 'OK') {
+                    solvedSet.add(`${s.problem.contestId}${s.problem.index}`);
                 }
             });
-            return distinctSolved.size;
-        };
 
-        solvedCount = countSolvedForRating(currentRating);
+            // 2. Determine Rating (Check if we need to level up)
+            let solvedCount = 0;
+            const countSolvedForRating = (rating) => {
+                const distinctSolved = new Set();
+                submissions.forEach(s => {
+                    if (s.verdict === 'OK' && s.problem.rating === rating) {
+                        distinctSolved.add(`${s.problem.contestId}${s.problem.index}`);
+                    }
+                });
+                return distinctSolved.size;
+            };
 
-        while (solvedCount >= 200) {
-            currentRating += 100;
             solvedCount = countSolvedForRating(currentRating);
+
+            while (solvedCount >= 200) {
+                currentRating += 100;
+                solvedCount = countSolvedForRating(currentRating);
+            }
+
+            // Update Config
+            userConfig.codeforces = { currentRating, solvedCount };
+            await userConfig.save();
+
+            // 3. Fetch Problemset (with timeout)
+            const probRes = await axios.get('https://codeforces.com/api/problemset.problems', {
+                timeout: 8000
+            });
+            if (probRes.data.status !== 'OK') return;
+
+            const allProblems = probRes.data.result.problems;
+
+            // 4. Filter & Sort
+            // Criteria: Rating == currentRating, ContestId >= 900 (Approx 2018), Not Solved
+            const candidates = allProblems.filter(p => {
+                return p.rating === currentRating && 
+                       p.contestId >= 900 && 
+                       !solvedSet.has(`${p.contestId}${p.index}`);
+            });
+
+            // Sort by contestId DESC (Latest first)
+            candidates.sort((a, b) => b.contestId - a.contestId);
+
+            // Take top 4
+            const selected = candidates.slice(0, 4);
+            console.log(`✅ Selected ${selected.length} CF problems for rating ${currentRating}`); // ADDED LOG
+
+            // 5. Update Log
+            log.codeforces.targetProblems = selected.map(p => ({
+                problemId: `${p.contestId}${p.index}`,
+                name: p.name,
+                link: `https://codeforces.com/contest/${p.contestId}/problem/${p.index}`,
+                status: 'PENDING'
+            }));
+
+            await log.save();
+
+        } catch (error) {
+            console.error("CF Fetch Error:", error.message);
         }
-
-        // Update Config
-        userConfig.codeforces = { currentRating, solvedCount };
-        await userConfig.save();
-
-        // 3. Fetch Problemset
-        const probRes = await axios.get('https://codeforces.com/api/problemset.problems');
-        if (probRes.data.status !== 'OK') return;
-
-        const allProblems = probRes.data.result.problems;
-
-        // 4. Filter & Sort
-        // Criteria: Rating == currentRating, ContestId >= 900 (Approx 2018), Not Solved
-        const candidates = allProblems.filter(p => {
-            return p.rating === currentRating && 
-                   p.contestId >= 900 && 
-                   !solvedSet.has(`${p.contestId}${p.index}`);
-        });
-
-        // Sort by contestId DESC (Latest first)
-        candidates.sort((a, b) => b.contestId - a.contestId);
-
-        // Take top 4
-        const selected = candidates.slice(0, 4);
-
-        // 5. Update Log
-        log.codeforces.targetProblems = selected.map(p => ({
-            problemId: `${p.contestId}${p.index}`,
-            name: p.name,
-            link: `https://codeforces.com/contest/${p.contestId}/problem/${p.index}`,
-            status: 'PENDING'
-        }));
-
-        await log.save();
-
     } catch (error) {
-        console.error("CF Fetch Error:", error.message);
+        console.error("CF Fetch Error (outer):", error.message);
     }
 }
-
-// Helper to check Codeforces Status
 async function checkCodeforcesStatus(log) {
     try {
         const userConfig = await UserConfig.findOne();
         if (!userConfig) return;
 
-        const response = await axios.get(`https://codeforces.com/api/user.status?handle=${userConfig.username}&from=1&count=50`);
+        const response = await axios.get(`https://codeforces.com/api/user.status?handle=${userConfig.username}&from=1&count=50`, {
+            timeout: 5000
+        });
         
         if (response.data.status === 'OK') {
             const submissions = response.data.result;
@@ -189,6 +327,7 @@ router.get('/quote', async (req, res) => {
 // Get today's dashboard data
 router.get('/today', async (req, res) => {
     try {
+        console.log("Dashboard /today requested"); // ADDED LOG
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
@@ -200,29 +339,52 @@ router.get('/today', async (req, res) => {
             log = await DailyLog.findOne({ date: today });
         }
 
-        // Check for LeetCode Daily (After 6 AM)
+        // Check for LeetCode Daily (After 6 AM) - don't block response
         const now = new Date();
         if (now.getHours() >= 6 && !log.leetcode.link) {
-            const link = await fetchLeetCodeLink();
-            if (link) {
-                log.leetcode.link = link;
-                await log.save();
-            }
+            fetchLeetCodeLink().then(link => {
+                if (link) {
+                    log.leetcode.link = link;
+                    log.save().catch(err => console.error('Error saving LeetCode link:', err.message));
+                }
+            }).catch(err => console.error('LeetCode fetch error:', err.message));
         }
 
-        // Check for Codeforces Daily (If empty)
+        // Check for Codeforces Daily (If empty) - don't block response
         if (!log.codeforces.targetProblems || log.codeforces.targetProblems.length === 0) {
-            await fetchDailyCodeforcesProblems(log);
-            // Reload log after update
-            log = await DailyLog.findOne({ date: today });
+            fetchDailyCodeforcesProblems(log).catch(err => 
+                console.error('Background CF fetch error:', err.message)
+            );
         }
 
-        // Check Status on Load
-        await checkCodeforcesStatus(log);
+        // Check for Codeforces Daily (If empty) - don't block response
+        if (!log.codeforces.targetProblems || log.codeforces.targetProblems.length === 0) {
+            fetchDailyCodeforcesProblems(log).catch(err => 
+                console.error('Background CF fetch error:', err.message)
+            );
+        }
 
-        // Force recalculate score to ensure Revision Queue is up to date (e.g. new overdue problems)
+        // Check for YouKnowWho Daily (If empty) - don't block response
+        if (!log.youKnowWho.targetProblems || log.youKnowWho.targetProblems.length === 0) {
+            fetchDailyYKWProblems(log).catch(err => 
+                console.error('Background YKW fetch error:', err)
+            );
+        }
+
+        // Check Status on Load (don't block response)
+        checkCodeforcesStatus(log).catch(err =>
+            console.error('Background CF status check error:', err.message)
+        );
+
+        checkYKWStatus(log).catch(err =>
+            console.error('Background YKW status check error:', err.message)
+        );
+
+        // Force recalculate score (don't block response)
         if (!log.isSubmitted) {
-            await calculateScore(log);
+            calculateScore(log).catch(err =>
+                console.error('Background score calculation error:', err.message)
+            );
         }
 
         res.json(log);
@@ -320,9 +482,32 @@ router.post('/refresh-status', async (req, res) => {
         }
 
         await checkCodeforcesStatus(log);
+        await checkYKWStatus(log);
         
         res.json(log);
 
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Retry YouKnowWho (Generate fresh problems if empty or stuck)
+router.post('/retry-youknowwho', async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let log = await DailyLog.findOne({ date: today });
+        
+        if (!log) return res.status(404).json({ message: 'Data not found' });
+
+        if (log.isSubmitted) {
+            return res.status(400).json({ message: 'Day already submitted. Cannot modify.' });
+        }
+
+        // Fetch fresh problems
+        await fetchDailyYKWProblems(log);
+        
+        res.json(log);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -550,8 +735,16 @@ async function calculateScore(log) {
 
     // 8. YouKnowWho (Weight: 10)
     let youKnowWhoScore = 0;
-    if (log.youKnowWho) {
-        youKnowWhoScore = log.youKnowWho.status === 'SOLVED' ? 1 : 0;
+    if (log.youKnowWho && log.youKnowWho.targetProblems && log.youKnowWho.targetProblems.length > 0) {
+        // If at least 1 problem is solved, give full points (10)
+        const solvedCount = log.youKnowWho.targetProblems.filter(p => p.status === 'SOLVED').length;
+        if (solvedCount >= 1) {
+            youKnowWhoScore = 1;
+            log.youKnowWho.isComplete = true;
+        } else {
+            youKnowWhoScore = 0;
+            log.youKnowWho.isComplete = false;
+        }
     }
     weightedScore += youKnowWhoScore * 10;
 

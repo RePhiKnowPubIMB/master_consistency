@@ -1,115 +1,94 @@
-const puppeteer = require('puppeteer');
+const fs = require('fs');
+const path = require('path');
 
-const fetchDailyYouKnowWhoProblem = async () => {
-    let browser;
+const CATALOG_FILE = path.join(__dirname, '..', 'data', 'ykw-problems.json');
+
+// Cache the catalog in memory
+let problemCatalog = null;
+
+/**
+ * Load the problem catalog from disk (cached after first load).
+ */
+function loadCatalog() {
+    if (problemCatalog) return problemCatalog;
+
     try {
-        // Launch browser - use system Chrome if available
-        const launchOptions = {
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        };
-        
-        // Use system Chrome if PUPPETEER_EXECUTABLE_PATH is set, otherwise let puppeteer use bundled
-        if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-            launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+        if (!fs.existsSync(CATALOG_FILE)) {
+            console.warn('⚠️ YKW catalog not found. Run: node scripts/scrapeYKW.js');
+            return [];
         }
-        
-        browser = await puppeteer.launch(launchOptions);
-
-        const page = await browser.newPage();
-        await page.goto('https://youkn0wwho.academy/topic-list', {
-            waitUntil: 'networkidle2',
-            timeout: 60000
-        });
-
-        // Wait for topics to load
-        await page.waitForSelector('div[data-tour="problems-section"]', { timeout: 10000 });
-
-        // Extract all problems from topics with importance 3★ and difficulty Easy/Medium
-        const allProblems = await page.evaluate(() => {
-            const problemsData = [];
-
-            // Get all problem rows in the table
-            const rows = document.querySelectorAll('div[data-tour="problems-section"] .css-0 .css-1sixqfj tbody tr');
-            
-            rows.forEach(row => {
-                try {
-                    // Get problem name
-                    const nameCell = row.querySelector('td');
-                    const nameLink = nameCell ? nameCell.querySelector('a') : null;
-                    const problemName = nameLink ? nameLink.textContent.trim() : '';
-                    const problemLink = nameLink ? nameLink.href : '';
-
-                    // Get difficulty badge
-                    const difficultyBadge = row.querySelector('span[class*="chakra-badge"]');
-                    const difficulty = difficultyBadge ? difficultyBadge.textContent.trim().toUpperCase() : '';
-
-                    // Get importance stars (count the filled stars)
-                    const starElements = row.querySelectorAll('svg[viewBox*="24"]');
-                    let importance = 0;
-                    starElements.forEach(star => {
-                        // Check if the star is filled (has fill color)
-                        const paths = star.querySelectorAll('path');
-                        paths.forEach(path => {
-                            const fill = path.getAttribute('fill');
-                            // Orange/yellow colors indicate filled stars
-                            if (fill && (fill.includes('fbbf24') || fill.includes('f59e0b') || 
-                                         fill.includes('fcd34d') || fill.includes('orange') || 
-                                         fill.includes('yellow'))) {
-                                importance++;
-                            }
-                        });
-                        // Alternative: check parent SVG fill
-                        const svgFill = star.getAttribute('fill');
-                        if (svgFill && (svgFill.includes('fbbf24') || svgFill.includes('f59e0b') || 
-                                       svgFill.includes('fcd34d') || svgFill.includes('orange'))) {
-                            importance++;
-                        }
-                    });
-
-                    // Filter: importance >= 3 and difficulty = EASY or MEDIUM
-                    if (problemName && problemLink && importance >= 3 && 
-                        (difficulty === 'EASY' || difficulty === 'MEDIUM')) {
-                        problemsData.push({
-                            name: problemName,
-                            link: problemLink,
-                            difficulty: difficulty,
-                            importance: importance
-                        });
-                    }
-                } catch (e) {
-                    console.error('Error parsing problem row:', e.message);
-                }
-            });
-
-            return problemsData;
-        });
-
-        await browser.close();
-
-        // Select random problem from filtered list
-        if (allProblems.length === 0) {
-            console.log('No problems found with importance >= 3 and difficulty Easy/Medium');
-            return null;
-        }
-
-        const randomProblem = allProblems[Math.floor(Math.random() * allProblems.length)];
-        
-        return {
-            name: randomProblem.name,
-            link: randomProblem.link,
-            difficulty: randomProblem.difficulty,
-            importance: randomProblem.importance,
-            source: 'YouKnowWho'
-        };
-
-    } catch (error) {
-        console.error('Error in fetchDailyYouKnowWhoProblem:', error.message);
-        if (browser) {
-            await browser.close();
-        }
-        return null;
+        const data = fs.readFileSync(CATALOG_FILE, 'utf-8');
+        problemCatalog = JSON.parse(data);
+        console.log(`📚 Loaded ${problemCatalog.length} YKW problems from catalog`);
+        return problemCatalog;
+    } catch (err) {
+        console.error('Error loading YKW catalog:', err.message);
+        return [];
     }
+}
+
+/**
+ * Simple date-seeded hash for deterministic daily selection.
+ * Same date → same problem, different date → different problem.
+ */
+function dateSeedHash(dateStr) {
+    let hash = 0;
+    for (let i = 0; i < dateStr.length; i++) {
+        const char = dateStr.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash);
+}
+
+/**
+ * Get today's daily problem from the static catalog.
+ * Uses date-seeded selection for consistency within the same day.
+ * @param {Date} [date] - Optional date override (defaults to today)
+ * @returns {Object|null} Problem object or null if catalog is empty
+ */
+const fetchDailyYouKnowWhoProblem = async (date) => {
+    const catalog = loadCatalog();
+    if (catalog.length === 0) return null;
+
+    const targetDate = date || new Date();
+    const dateStr = targetDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const index = dateSeedHash(dateStr) % catalog.length;
+    const problem = catalog[index];
+
+    return {
+        name: problem.name,
+        link: problem.link,
+        difficulty: problem.difficulty,
+        topic: problem.topic,
+        section: problem.section,
+        source: problem.source || 'YouKnowWho',
+        importance: 3 // All topics are 3★
+    };
 };
 
-module.exports = { fetchDailyYouKnowWhoProblem };
+/**
+ * Force reload the catalog from disk (e.g., after running the scraper).
+ */
+const reloadCatalog = () => {
+    problemCatalog = null;
+    return loadCatalog();
+};
+
+/**
+ * Get catalog stats for debugging.
+ */
+const getCatalogStats = () => {
+    const catalog = loadCatalog();
+    const sections = {};
+    const difficulties = { Easy: 0, Medium: 0 };
+
+    catalog.forEach(p => {
+        sections[p.section] = (sections[p.section] || 0) + 1;
+        if (difficulties[p.difficulty] !== undefined) difficulties[p.difficulty]++;
+    });
+
+    return { totalProblems: catalog.length, sections, difficulties };
+};
+
+module.exports = { fetchDailyYouKnowWhoProblem, reloadCatalog, getCatalogStats };

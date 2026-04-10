@@ -1,7 +1,28 @@
-import React from 'react';
-import { X, CheckCircle, XCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, CheckCircle, XCircle, Video } from 'lucide-react';
+import { getVideo, toDateKey } from '../utils/videoStorage';
 
 const DayDetailsModal = ({ day, onClose }) => {
+    const [videoUrl, setVideoUrl] = useState(null);
+    const [videoName, setVideoName] = useState('');
+
+    useEffect(() => {
+        if (day?.date) {
+            const dateKey = toDateKey(day.date);
+            getVideo(dateKey).then(videoData => {
+                if (videoData) {
+                    const url = URL.createObjectURL(videoData.blob);
+                    setVideoUrl(url);
+                    setVideoName(videoData.fileName);
+                }
+            }).catch(err => console.error('Error loading video:', err));
+        }
+
+        return () => {
+            if (videoUrl) URL.revokeObjectURL(videoUrl);
+        };
+    }, [day?.date]);
+
     if (!day) return null;
 
     const formatDate = (dateStr) => {
@@ -32,6 +53,22 @@ const DayDetailsModal = ({ day, onClose }) => {
                 </div>
 
                 <div className="p-6 space-y-6">
+                    {/* Video Section */}
+                    {videoUrl && (
+                        <div className="bg-slate-700/30 p-4 rounded-lg border border-indigo-500/30">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Video size={16} className="text-indigo-400" />
+                                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Daily Video</h3>
+                                <span className="text-xs text-slate-500 ml-auto">{videoName}</span>
+                            </div>
+                            <video
+                                src={videoUrl}
+                                controls
+                                className="w-full max-h-80 rounded-lg bg-black"
+                            />
+                        </div>
+                    )}
+
                     {/* Comment Section */}
                     <div className="bg-slate-700/30 p-4 rounded-lg border border-slate-600/50">
                         <h3 className="text-sm font-semibold text-slate-300 mb-2 uppercase tracking-wider">Day Reflection</h3>
@@ -86,7 +123,7 @@ const DayDetailsModal = ({ day, onClose }) => {
                                 <span className="text-slate-300">Minutes</span>
                                 <span className="text-white font-bold">{day.kaggle?.minutesDone || 0} / {day.kaggle?.targetMinutes || 0}</span>
                             </div>
-                             <ul className="mt-2 space-y-1">
+                            <ul className="mt-2 space-y-1">
                                 {day.kaggle?.todoList?.map((task, idx) => (
                                     <li key={idx} className="flex items-center gap-2 text-xs text-slate-400">
                                         {task.isDone ? <CheckCircle size={12} className="text-emerald-500" /> : <XCircle size={12} className="text-slate-600" />}
