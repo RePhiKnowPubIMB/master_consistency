@@ -38,8 +38,8 @@ const runMigrations = async () => {
 const connectDB = async () => {
     if (mongoose.connection.readyState >= 1) return;
     try {
-        await mongoose.connect(process.env.MONGO_URI, { dbName: 'consistency-architect' });
-        console.log('✅ MongoDB Connected to consistency-architect');
+        await mongoose.connect(process.env.MONGO_URI, { dbName: 'test' });
+        console.log('✅ MongoDB Connected to test database');
         await seedQuotes();
         await runMigrations();
     } catch (err) {
