@@ -51,14 +51,6 @@ const generateDailyLog = async () => {
             console.error('Background CF problems fetch error:', err.message)
         );
 
-        // 3.5. YouKnowWho Problem (instant from static catalog)
-        let youKnowWhoProblem = null;
-        try {
-            youKnowWhoProblem = await fetchDailyYouKnowWhoProblem(today);
-        } catch (err) {
-            console.error('YouKnowWho fetch error:', err.message);
-        }
-
         // 4. Revision Logic (7 days ago)
         const sevenDaysAgo = new Date(today);
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -112,14 +104,10 @@ const generateDailyLog = async () => {
                 level,
                 targets: workoutTargets
             },
-            youKnowWho: youKnowWhoProblem ? {
-                name: youKnowWhoProblem.name,
-                link: youKnowWhoProblem.link,
-                difficulty: youKnowWhoProblem.difficulty,
-                topic: youKnowWhoProblem.topic,
-                importance: youKnowWhoProblem.importance,
-                status: 'PENDING'
-            } : { status: 'PENDING' }
+            youKnowWho: {
+                targetProblems: [],
+                isComplete: false
+            }
         });
 
         await newLog.save();

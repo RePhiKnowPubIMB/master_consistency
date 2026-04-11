@@ -29,6 +29,10 @@ const ykwProblemSchema = new mongoose.Schema(
     },
     dailyIndex: {
       type: Number // To track position in the topic (1-5 etc.)
+    },
+    globalOrder: {
+      type: Number,
+      required: true
     }
   },
   {

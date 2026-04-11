@@ -28,49 +28,9 @@ router.get('/cron', async (req, res) => {
 // Helper to fetch YKW Problems
 const fetchDailyYKWProblems = async (log) => {
     try {
-        let userConfig = await UserConfig.findOne({});
-        if (!userConfig) {
-            userConfig = await UserConfig.create({
-                ykw: {
-                    currentTopic: "Introduction",
-                    topicProblemCount: 0
-                }
-            });
-        }
-
-        let currentTopic = userConfig.ykw?.currentTopic || "Introduction";
-        const currentCount = userConfig.ykw?.topicProblemCount || 0;
-
-        // Get unsolved problems for the current topic
         let unsolved = await YKWProblem.find({
-            topicName: currentTopic,
             solved: false
-        }).sort({ dailyIndex: 1 }).limit(4);
-
-        // If no problems found for current topic, try next topic automatically
-        if (unsolved.length === 0) {
-            const allTopics = await YKWProblem.distinct('topicName');
-            const currentIndex = allTopics.indexOf(currentTopic);
-
-            for (let i = 1; i <= allTopics.length; i++) {
-                const checkIndex = (currentIndex + i) % allTopics.length;
-                const nextTopicCandidate = allTopics[checkIndex];
-
-                const count = await YKWProblem.countDocuments({ topicName: nextTopicCandidate, solved: false });
-                if (count > 0) {
-                    userConfig.ykw.currentTopic = nextTopicCandidate;
-                    userConfig.ykw.topicProblemCount = 0;
-                    await userConfig.save();
-                    currentTopic = nextTopicCandidate;
-
-                    unsolved = await YKWProblem.find({
-                        topicName: currentTopic,
-                        solved: false
-                    }).sort({ dailyIndex: 1 }).limit(4);
-                    break;
-                }
-            }
-        }
+        }).sort({ globalOrder: 1 }).limit(5);
 
         if (unsolved.length > 0) {
             log.youKnowWho.targetProblems = unsolved.map(p => ({
@@ -82,7 +42,10 @@ const fetchDailyYKWProblems = async (log) => {
                 status: 'PENDING'
             }));
             log.youKnowWho.isComplete = false;
+            log.markModified('youKnowWho');
         } else {
+            log.youKnowWho.targetProblems = [];
+            log.markModified('youKnowWho');
             return [];
         }
     } catch (error) {
