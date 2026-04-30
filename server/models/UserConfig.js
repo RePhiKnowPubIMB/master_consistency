@@ -32,7 +32,9 @@ const userConfigSchema = new mongoose.Schema({
       squats: { type: Number, default: 20 }, 
       running: { type: Number, default: 40 }, 
       deadlift: { type: Number, default: 0 }, 
-      biceps: { type: Number, default: 0 } 
+      biceps: { type: Number, default: 0 },
+      coreWorkout: { type: Number, default: 3 },
+      gymnasium: { type: Number, default: 1 }
     },
     increment: { 
       pushups: { type: Number, default: 5 }, 
@@ -40,7 +42,9 @@ const userConfigSchema = new mongoose.Schema({
       squats: { type: Number, default: 5 }, 
       running: { type: Number, default: 0 }, 
       deadlift: { type: Number, default: 5 }, 
-      biceps: { type: Number, default: 2 } 
+      biceps: { type: Number, default: 2 },
+      coreWorkout: { type: Number, default: 0 },
+      gymnasium: { type: Number, default: 0 }
     },
     maxStats: {
         pushups: { type: Number, default: 100 }, 
@@ -48,7 +52,9 @@ const userConfigSchema = new mongoose.Schema({
         squats: { type: Number, default: 100 }, 
         running: { type: Number, default: 60 }, 
         deadlift: { type: Number, default: 50 }, 
-        biceps: { type: Number, default: 100 }
+        biceps: { type: Number, default: 30 },
+        coreWorkout: { type: Number, default: 5 },
+        gymnasium: { type: Number, default: 2 }
     }
   },
   ykw: {

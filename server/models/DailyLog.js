@@ -71,7 +71,9 @@ const dailyLogSchema = new mongoose.Schema({
       squats: Number,
       running: Number,
       deadlift: Number,
-      biceps: Number
+      biceps: Number,
+      coreWorkout: Number,
+      gymnasium: Number
     },
     checklist: {
         pushups: { type: Boolean, default: false },
@@ -79,7 +81,9 @@ const dailyLogSchema = new mongoose.Schema({
         squats: { type: Boolean, default: false },
         biceps: { type: Boolean, default: false },
         deadlift: { type: Boolean, default: false },
-        running: { type: Boolean, default: false }
+        running: { type: Boolean, default: false },
+        coreWorkout: { type: Boolean, default: false },
+        gymnasium: { type: Boolean, default: false }
     },
     isCompleted: { type: Boolean, default: false }
   },

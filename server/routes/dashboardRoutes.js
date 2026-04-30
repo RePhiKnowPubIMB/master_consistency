@@ -691,7 +691,7 @@ async function calculateScore(log) {
 
     // 1. Codeforces (Weight: 30)
     const cfScore = Math.min(log.codeforces.solvedCount / 4, 1);
-    weightedScore += cfScore * 30;
+    weightedScore += cfScore * 20;
 
     // 2. LeetCode (Weight: 5)
     const lcScore = log.leetcode && log.leetcode.status === 'SOLVED' ? 1 : 0;
@@ -728,17 +728,25 @@ async function calculateScore(log) {
         workoutScore = 1;
     } else {
         // Calculate based on checklist
-        const exercises = ['pushups', 'situps', 'squats', 'biceps', 'deadlift', 'running'];
+        const exercises = ['pushups', 'situps', 'squats', 'biceps', 'deadlift', 'coreWorkout', 'gymnasium', 'running'];
         let completedOps = 0;
         let totalOps = 0;
 
         // Check if checklist exists and has keys
         if (log.workout && log.workout.checklist) {
             exercises.forEach(ex => {
-                // Only count if the exercise is in the checklist (schema defines them all default false)
-                if (log.workout.checklist[ex] !== undefined) {
-                    totalOps++;
-                    if (log.workout.checklist[ex]) completedOps++;
+                const isCompleted = log.workout.checklist[ex];
+                if (ex === 'running') {
+                    // Running is optional. Add to totalOps only if it's completed.
+                    if (isCompleted) {
+                        totalOps++;
+                        completedOps++;
+                    }
+                } else {
+                    if (log.workout.checklist[ex] !== undefined) {
+                        totalOps++;
+                        if (isCompleted) completedOps++;
+                    }
                 }
             });
         }

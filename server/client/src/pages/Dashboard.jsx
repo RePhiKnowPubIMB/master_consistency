@@ -309,29 +309,35 @@ const Dashboard = () => {
         { key: 'squats', label: `${dailyLog?.workout?.targets?.squats || 20} Squats` },
         { key: 'biceps', label: `${dailyLog?.workout?.targets?.biceps || 20} Biceps Curl` },
         { key: 'deadlift', label: `${dailyLog?.workout?.targets?.deadlift || 20} Deadlift` },
-        { key: 'running', label: `${dailyLog?.workout?.targets?.running || 40} Min Running` }
+        { key: 'coreWorkout', label: `Core Workout 3 Sets` },
+        { key: 'gymnasium', label: `Gymnasium Workout` },
+        { key: 'running', label: `${dailyLog?.workout?.targets?.running || 40} Min Running (Optional)`, optional: true }
     ];
 
     const handleWorkoutCheck = (key) => {
         const currentChecklist = dailyLog.workout.checklist || {};
         const newStatus = !currentChecklist[key];
 
-        const allKeys = workoutExercises.map(e => e.key);
-        const willBeComplete = allKeys.every(k => k === key ? newStatus : currentChecklist[k]);
+        const willBeComplete = workoutExercises.every(e => {
+            if (e.optional) return true; // Don't require optional exercises
+            return e.key === key ? newStatus : currentChecklist[e.key];
+        });
 
-        handleUpdate({
+        updateDay({
             [`workout.checklist.${key}`]: newStatus,
             'workout.isCompleted': willBeComplete
         });
     };
 
-    const handleGlobalWorkoutCheck = () => {
-        const newState = !dailyLog.workout.isCompleted;
-        const updates = { 'workout.isCompleted': newState };
+    const handleCompleteWorkout = () => {
+        const newStatus = !dailyLog.workout.isCompleted;
+        const updates = { 'workout.isCompleted': newStatus };
         workoutExercises.forEach(e => {
-            updates[`workout.checklist.${e.key}`] = newState;
+            if (!e.optional || newStatus === false) { // Don't automatically check optional when checking all, but clear if unchecking all
+                updates[`workout.checklist.${e.key}`] = newStatus;
+            }
         });
-        handleUpdate(updates);
+        updateDay(updates);
     };
 
     if (loading) return <div className="text-white text-center mt-20">Loading Midnight Brain...</div>;
@@ -585,7 +591,7 @@ const Dashboard = () => {
                                 <input
                                     type="checkbox"
                                     checked={dailyLog.workout.isCompleted}
-                                    onChange={handleGlobalWorkoutCheck}
+                                    onChange={handleCompleteWorkout}
                                     disabled={dailyLog.isSubmitted}
                                     className="w-6 h-6 rounded border-slate-600 text-blue-500 focus:ring-blue-500 bg-slate-700 disabled:opacity-50"
                                 />

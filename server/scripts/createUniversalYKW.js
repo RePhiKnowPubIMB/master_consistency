@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const YKWProblem = require('../models/YKWProblem');
 
 // Load original data
-const rawData = JSON.parse(fs.readFileSync('../data/all-topic-problems.json', 'utf8'));
+const rawData = JSON.parse(fs.readFileSync('./data/all-topic-problems.json', 'utf8'));
 
 const topics = Object.keys(rawData);
 console.log(`Found ${topics.length} topics in the JSON.`);
@@ -53,7 +53,7 @@ while (moreProblemsAvailable) {
 }
 
 console.log(`Created interleaved list of ${interleaved.length} unique problems.`);
-fs.writeFileSync('../data/universal-ykw.json', JSON.stringify(interleaved, null, 2));
+fs.writeFileSync('./data/universal-ykw.json', JSON.stringify(interleaved, null, 2));
 
 async function seedDB() {
     try {
