@@ -98,6 +98,8 @@ const getContestData = async (handle) => {
         const isContestRatedForUser = (contestName, userCurrentRating) => {
             const n = contestName.toLowerCase();
             
+            if (n.includes('unrated')) return false;
+
             // Div 4 is unrated for Specialist or above (rating >= 1400)
             if (n.includes('div. 4')) {
                 return userCurrentRating < 1400;
@@ -149,31 +151,33 @@ const getContestData = async (handle) => {
             );
         };
 
-        // Upcoming Contests
+                // Upcoming Contests
         const upcoming = allContests
-            .filter(c => c.phase === 'BEFORE' && isRelevantContest(c.name))
+            .filter(c => c.phase === 'BEFORE' && isRelevantContest(c.name) && isContestRatedForUser(c.name, userCurrentRating))
             .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds); // Nearest first
-
+        
         // Past Contests (History) - From 2024 onwards
         const startOf2024 = new Date('2024-01-01').getTime() / 1000;
         const history = allContests
             .filter(c => c.phase === 'FINISHED' && isRelevantContest(c.name) && c.startTimeSeconds >= startOf2024)
             .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds); // Oldest first
-
-        // Map history to participation status
-        // For unrated contests, mark as participated (auto-filled)
-        const heatmapData = history.map(c => {
-            const isRated = isContestRatedForUser(c.name, userCurrentRating);
-            const participated = participatedContestIds.has(c.id);
             
-            return {
-                id: c.id,
-                name: c.name,
-                startTimeSeconds: c.startTimeSeconds,
-                participated: isRated ? participated : true, // Auto-mark unrated contests as participated
-                isRated: isRated
-            };
-        });
+        // Map history to participation status
+        // Only include rated contests, skip unrated ones entirely
+        const heatmapData = history
+            .map(c => {
+                const isRated = isContestRatedForUser(c.name, userCurrentRating);
+                const participated = participatedContestIds.has(c.id);
+                
+                return {
+                    id: c.id,
+                    name: c.name,
+                    startTimeSeconds: c.startTimeSeconds,
+                    participated: participated,
+                    isRated: isRated
+                };
+            })
+            .filter(c => c.isRated);
 
         // Calculate Streaks (only considering rated contests)
         let currentStreak = 0;
@@ -185,9 +189,7 @@ const getContestData = async (handle) => {
         const oneMonthAgo = Date.now() / 1000 - 30 * 24 * 60 * 60;
 
         // Filter only rated contests for streak calculation
-        const ratedContests = heatmapData.filter(c => c.isRated);
-
-        // Calculate Max Streak (All Time)
+        const ratedContests = heatmapData;        // Calculate Max Streak (All Time)
         let tempStreak = 0;
         ratedContests.forEach(c => {
             if (c.participated) {
