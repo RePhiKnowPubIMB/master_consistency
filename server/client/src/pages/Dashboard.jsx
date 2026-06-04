@@ -641,7 +641,7 @@ const Dashboard = () => {
                                         </thead>
                                         <tbody className="divide-y divide-slate-800/50">
                                             {dailyLog?.codeforces?.targetProblems?.map((problem, index) => (
-                                                <tr key={problem.problemId || index} className="hover:bg-green-500/5 transition-all duration-300 group">
+                                                <tr key={problem.problemId || index} className={`hover:bg-green-500/5 transition-all duration-300 group ${index >= 4 ? 'opacity-80' : ''}`}>
                                                     <td className="px-6 py-5">
                                                         <div className="flex flex-col gap-2">
                                                             <a
@@ -660,6 +660,11 @@ const Dashboard = () => {
                                                                 )}
                                                                 <span>{problem.name}</span>
                                                             </a>
+                                                            {index >= 4 && (
+                                                                <span className="text-[9px] bg-slate-800 text-slate-400 w-max px-2 py-0.5 rounded font-bold uppercase tracking-wide border border-slate-700">
+                                                                    Optional Extra
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-5 text-right">

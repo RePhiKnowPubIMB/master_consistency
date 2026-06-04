@@ -236,8 +236,8 @@ async function fetchDailyCodeforcesProblems(log) {
         // Step 6: Sort by latest contests first (descending contestId)
         candidates.sort((a, b) => b.contestId - a.contestId);
 
-        // Step 7: Take top 4
-        const selected = candidates.slice(0, 4);
+        // Step 7: Take top 10
+        const selected = candidates.slice(0, 10);
         console.log(`✅ [CF] Selected ${selected.length} problems`);
 
         if (selected.length === 0) {
